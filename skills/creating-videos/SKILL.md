@@ -1,21 +1,23 @@
 ---
 name: creating-videos
-description: Use when creating a video from a concept, script, footage, photos, screen captures, animation, generated visuals, or mixed media.
+description: Use when a user wants an end-to-end video made from an idea or source material, including research, scripting, production, editing, review, and delivery.
 ---
 
 # Creating Videos
 
-Create a video that fits the intended audience, feeling, and destination, then deliver a reviewed export and reproducible project files. Read [the production workflow](references/production-workflow.md) for scripting, story, visuals, narration, and assembly. Read [creative modes](references/creative-modes.md) to choose an approach for the source material. Read [the app-capture guide](references/app-capture.md) when recording a live or demo application.
+Own the full lifecycle: research when needed, concept and script, source and create assets, produce footage/audio, edit the video, review it, and deliver the final export. Do not stop after a script, storyboard, or rough cut when the user asked for a finished video. Read [the production workflow](references/production-workflow.md); load [research and scripting](references/research-and-scripting.md), [creative modes](references/creative-modes.md), or [the app-capture guide](references/app-capture.md) when relevant. Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production.
+
+Check the available browser, research, capture, audio, editing, and rendering tools early. Choose a feasible route based on actual access and capability. Continue useful stages if a tool is missing; clearly state the blocker and provide the best available deliverable without claiming that an uncreated video is finished.
 
 ## Required production record
 
 Maintain these project artifacts as they become available:
 
 1. A brief describing purpose, audience, intended feeling or viewer outcome, destination, length, format, style, and call to action.
-2. A treatment, script, storyboard, shot list, or scene plan suited to the format.
-3. An asset/rights record and a note of unresolved facts, claims, privacy concerns, or permissions.
-4. A timeline or scene manifest when the project has multiple shots, narration, captions, or generated assets.
-5. The editable project, final export, caption/transcript sidecars when useful, and a review record.
+2. Research notes and a source ledger for factual or current claims; clearly mark when research is not needed.
+3. A checked script, treatment, storyboard, and shot/scene plan suited to the format.
+4. An asset/rights record, production timeline, and edit manifest when useful.
+5. A reviewed final export, editable project, caption/transcript sidecars when useful, and concise review notes.
 
 ## Working rules
 
@@ -24,6 +26,7 @@ Maintain these project artifacts as they become available:
 - Match the concept to the actual source material. Generated visuals are illustrative unless verified; do not present them as captured evidence.
 - Protect privacy and identity. Use approved material and permissions for people, voices, music, fonts, stock, and generated assets.
 - Prefer local/free tools when they meet the brief. Confirm actual provider capability, cost, access, and rights before using them.
+- Never start a paid job, subscription, or trial without the user's explicit approval.
 - Creating a video does not authorize publishing, sending, or uploading it.
 - Review the rendered export with the editing skill's checklist before delivery.
 

@@ -1,10 +1,10 @@
 # Video Creation and Editing Skills
 
-Reusable Codex skills for planning, creating, editing, and reviewing many kinds of video: personal stories, explainers, product demos, marketing pieces, social clips, event videos, footage recuts, photo stories, motion graphics, and AI-assisted video.
+Reusable Codex skills for the full video lifecycle: research, concept development, scripting, asset preparation, video creation, editing, quality review, and delivery. They support personal stories, explainers, product demos, marketing pieces, social clips, events, footage recuts, motion graphics, and AI-assisted video.
 
 ## Skills
 
-- [`creating-videos`](skills/creating-videos/SKILL.md) — develop a creative brief, script, storyboard, visuals, voice, and finished video from a concept or source material.
+- [`creating-videos`](skills/creating-videos/SKILL.md) — take a video from idea through research, script, production, editing, review, and a finished export.
 - [`editing-videos`](skills/editing-videos/SKILL.md) — revise, recut, caption, enhance, review, and export existing video while keeping edits reproducible.
 
 ## Install in Codex
@@ -23,14 +23,14 @@ For a repo-local or other agent runtime, copy the `skills` folders to that runti
 ## Start a project
 
 1. Copy [`templates/production-brief.md`](templates/production-brief.md) into your project and describe its purpose, audience, tone, source material, destination, and rights.
-2. Choose the creation mode and visual direction in [`creative-modes.md`](skills/creating-videos/references/creative-modes.md).
-3. If the work uses scenes, create a scene manifest from [`scene-manifest.example.json`](templates/scene-manifest.example.json).
-4. Keep project scripts, footage, generated assets, audio, timelines, and exports in that project's folder. This repo contains no footage or account data.
-5. Use the creation skill to make the video and the editing skill for revisions or finishing.
+2. Research and script using [`research-and-script-ledger.md`](templates/research-and-script-ledger.md) when factual material needs sources.
+3. Choose a creative mode, gather or create visuals, and plan scenes from [`scene-manifest.example.json`](templates/scene-manifest.example.json).
+4. Keep project scripts, footage, generated assets, audio, timelines, and exports in the project folder. This repo contains no footage or account data.
+5. Invoke `creating-videos` to carry the work through production, editing, review, and final delivery. Invoke `editing-videos` on its own when you already have a video and only need changes.
 
 ## Tooling and rights
 
-The skills support source footage, photos, screen recordings, animation, generated video, voiceover, and mixed-media projects. Local Piper text-to-speech and FFmpeg are one optional workflow; editors and connected generation tools are also options when available. Confirm access, actual capabilities, pricing, and rights before relying on a tool. Lessac `en_US-lessac-medium` was selected for the example project, but voice choice is configurable. Treat external processing, stock assets, music, paid services, and publishing as separate choices that require appropriate authorization.
+The skills support source footage, photos, screen recordings, animation, generated video, voiceover, and mixed-media projects. Local Piper text-to-speech and FFmpeg are one optional workflow; editors and connected generation tools are also options when available. Confirm access, actual capabilities, pricing, and rights before relying on a tool. Never start a paid job, subscription, or trial without the user's explicit approval. Lessac `en_US-lessac-medium` was selected for the example project, but voice choice is configurable. Treat external processing, stock assets, music, and publishing as separate choices that require appropriate authorization.
 
 ## Repository scope
 
