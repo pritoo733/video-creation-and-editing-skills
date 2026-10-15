@@ -1,0 +1,39 @@
+# Video Creation Workflow
+
+## 1. Define the purpose and feeling
+
+Identify why the video should exist, who it is for, what viewers should feel or understand, and what they may do next. For personal stories, ask what makes the memory meaningful and let real details guide the treatment. For explainers, product, documentary, event, or client work, set the viewer outcome and evidence standard. Determine destination, runtime, orientation, resolution, language, narration, captions, branding, and deliverables. When comprehensive coverage would make one video unwieldy, use chapters or a series rather than silently dropping topics.
+
+Choose a format that fits the story and viewing context. Estimate narration at a comfortable pace, then leave room for viewers to see, hear, or read the material. Verify current destination specifications when platform compatibility matters.
+
+## 2. Ground the story and script
+
+Inspect and organize the supplied material: video, audio, photos, scripts, browser captures, documents, or authorized research. Build an evidence inventory and record where factual claims came from. For product tutorials, compare the live UI, approved help materials, and owner statements; note empty states, demo-only behavior, changing values, permissions, and discrepancies. For personal work, use specific real details and keep uncertain memories explicit.
+
+Choose the right structure: a narrative arc, explainer sequence, demonstration, montage, interview, short-form hook/payoff, or another form that serves the brief. Write narration for speaking and separate stage directions from spoken words. For tutorials, explain purpose, sequence, expected state, and limitations. Avoid reading identifiers or sensitive values aloud. Keep each scene focused on one beat.
+
+Create a storyboard, shot list, or scene plan. Use the example structure in `../../../templates/scene-manifest.example.json` for multi-scene work. Track stable IDs, source assets, purpose, narration, visuals, captions, and timing through revisions.
+
+## 3. Capture, create, and prepare visuals
+
+For app walkthroughs, follow [app-capture.md](app-capture.md). For footage, review supplied material and log useful takes, action, sound, and source times. For photo stories, choose images that support the real story. For graphics or AI-generated video, use them for their intended illustrative or creative role and check continuity, text, anatomy, flicker, and artifacts. Preserve originals and provenance. Do not make invented footage appear documentary or turn mock interfaces into product evidence.
+
+Build a visual system that fits the tone and platform. Check graphics, subtitles, and logos at intended playback size and safe areas. Do not let overlays obscure faces, essential source text, or key visual evidence.
+
+## 4. Audition and create audio
+
+For narration or voiceover, use the user's specified voice or audition available candidates when the choice matters. Evaluate pronunciation, cadence, expression, pauses, and intelligibility. Do not promise natural-sounding generated speech without listening. Preserve authentic source audio when it matters to the story.
+
+For Piper, select an exact model (Lessac `en_US-lessac-medium` was used in one project). Check the model and underlying voice dataset license for the intended use. Keep selection configurable and exclude model files from the repo.
+
+Synthesize in phrase- or scene-sized units when this makes corrections and timing manageable. Keep pronunciation notes in the project. Audition a representative passage before batching the full script. Leave room around speech edits and preserve the final word.
+
+Use music and sound effects only when supplied or authorized. Check their terms for the planned use. Mix speech clearly and keep effects subordinate to the story.
+
+## 5. Assemble the timeline
+
+Assemble shots, source audio, narration, graphics, titles, transitions, and music into a coherent timeline. Keep speech and visible action synchronized where viewers expect it. Use cutaways only when they support the same idea. Set pace to the material; avoid effects that distract. Respect aspect ratio and caption safe areas. Keep a timeline or manifest that makes revisions reproducible.
+
+Generate captions from final audio timing. Keep phrases readable, align their boundaries to speech, and leave complete words at cuts. Retiming or replacing a voice line requires regenerating affected captions and scene duration.
+
+For review, export settings, and repair, follow [the editing skill](../../editing-videos/SKILL.md) and its review checklist.

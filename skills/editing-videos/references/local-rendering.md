@@ -1,4 +1,4 @@
-# Local Rendering Notes
+# Local Video Rendering Notes
 
 Use these notes when a local render is appropriate. Confirm installed versions and actual input/output paths before writing commands. Keep generated audio, frame renders, subtitles, and intermediate scene clips in a working directory separate from source assets and final outputs.
 
@@ -10,7 +10,7 @@ Listen to an audition that includes the application's proper names, acronyms, nu
 
 ## FFmpeg assembly
 
-For a landscape product tutorial, 1920×1080 at 24 or 30 fps is a practical master. Use H.264/yuv420p for broad playback compatibility and AAC audio when an MP4 delivery is requested. These are starting points, not mandatory platform guarantees. Confirm current destination specifications for uploads.
+Choose dimensions, frame rate, codec, and bitrate for the intended source and destination. Landscape 1920×1080 at 24 or 30 fps is one practical master; vertical and square formats need their own framing and safe areas. H.264/yuv420p and AAC are common MP4 choices. These are starting points, not compatibility guarantees. Confirm current destination specifications when uploading.
 
 Use a scene manifest or editor timeline that records source asset, start/end, narration file, caption file, and overlays. Build caption timing from the final audio. Burn captions in only when requested or when the delivery context calls for it; otherwise provide an SRT sidecar. Add chapter metadata when the target player supports it.
 

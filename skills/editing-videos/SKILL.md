@@ -1,0 +1,20 @@
+---
+name: editing-videos
+description: Use when revising, recutting, captioning, enhancing, reviewing, or exporting existing footage, a social clip, story, explainer, screen recording, or other video.
+---
+
+# Editing Videos
+
+Make changes for the user's creative goal and intended destination, preserve meaningful source context, and deliver a reviewed export with enough edit data for revisions. Read [the review checklist](references/review-checklist.md) for the full quality gate. Read [the local rendering guide](references/local-rendering.md) when using Piper, FFmpeg, or a frame-based local workflow.
+
+## Edit contract
+
+Before editing, identify the source, current cut, requested changes, audience, destination, creative intent, and protected shots/audio/wording. Keep originals. Record affected ranges and changes in an edit manifest or existing editor timeline.
+
+For personal stories, preserve the speaker's meaning and the emotional reason behind the material. For factual or commercial work, preserve qualifications and evidence. For app footage, retain meaningful labels, disclosures, and UI context. Document masking, cropping, generated shots, and replacements. Regenerate captions after any timing or dialogue change.
+
+Make one representative edit first when the change introduces a new treatment. Review it at intended playback size before applying it throughout. Use available local tools where practical; check cost and authorization before external processing.
+
+## Delivery gate
+
+Deliver only the current export. Verify that it opens, has the expected duration, dimensions, frame rate, and audio/caption streams, and that the final words are complete. Review the rendered result for visual continuity, caption sync/readability, voice quality, sensitive content, and compliance with the requested treatment. State which checks were performed and which were unavailable. Do not equate a successful render or codec check with a creative review.

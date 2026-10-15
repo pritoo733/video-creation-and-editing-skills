@@ -15,7 +15,7 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 - Listen to the opening, representative sections, scene joins, and final sentence. When possible, listen to the full export at normal speed. Describe sampling accurately if full listening was unavailable.
 - Check names, acronyms, numbers, pauses, pace, tone, clipping, clicks, and room/noise artifacts. Generated speech may sound unnatural even when the words are correct.
 - Compare captions against the final audio, including scene edits, pauses, line breaks, long reading times, overlaps, and final words. Recalculate timing after edits; do not reuse timestamps from replaced audio.
-- Check speech loudness and peak level. Keep narration clear above any authorized music and avoid clipping; no music is required for instructional video.
+- Check dialogue/music balance and peak level. Keep important speech clear, avoid clipping, and omit music that competes with the story or lacks usage rights.
 
 ## Technical export
 

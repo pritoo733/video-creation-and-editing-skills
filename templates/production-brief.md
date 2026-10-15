@@ -1,44 +1,39 @@
-# Video Production Brief
+# Video Project Brief
 
-## Goal
-- Product/app:
-- Viewer outcome:
-- Primary audience:
-- Audience familiarity:
+## Purpose
+- Working title:
+- Video type (story, explainer, promo, social clip, tutorial, event, other):
+- Why make this video:
+- Audience and viewing context:
+- What viewers should feel, understand, or do:
+- Call to action, if any:
 
-## Coverage
-- User roles:
-- Workflows to include:
-- Topics to exclude:
-- Source-of-truth links/files:
-- Known limitations or disputed behavior:
+## Story and creative direction
+- Core idea or story:
+- Desired tone, pace, and emotion:
+- Reference videos or visual style:
+- Brand assets, colors, fonts, or music:
+- Topics, claims, or moments to preserve:
 
-## Creative direction
-- Tone and delivery:
-- Language/accent/voice preference:
-- Brand colors/fonts/logo:
-- On-screen text/caption preference:
-- Call to action:
+## Source material
+- Footage/audio/photos/documents/links:
+- Source of truth for factual claims:
+- People, locations, releases, and permissions:
+- Privacy details to remove or mask:
+- Generated visuals or AI tools allowed:
 
-## Capture and privacy
-- Authorized environment and account roles:
-- Approved sample data:
-- Sensitive values to mask:
-- Actions permitted during capture:
-- Actions that must not be taken:
-
-## Delivery
-- Target runtime and aspect ratio:
-- Resolution/frame rate:
-- MP4/other format:
+## Production
+- Language and narration/voice preference:
+- Runtime, aspect ratio, resolution, frame rate:
 - Captions/transcript:
-- Chapters/thumbnail/source project:
-- Intended distribution and voice/asset rights:
-- Budget and permitted services:
+- Editing/generation tools available:
+- Budget and permitted paid services:
+- Voice, music, font, stock, and model rights for intended use:
 
-## Review
-- Product owner reviewer:
-- Required factual/legal review:
-- Full playback reviewer:
-- Technical checks:
-- Delivery location:
+## Delivery and review
+- File format and destination:
+- Thumbnail, chapters, alternate cuts, or project files:
+- Reviewer(s) and approval needs:
+- Factual, legal, or brand review:
+- Audio and visual review coverage:
+- Output location:

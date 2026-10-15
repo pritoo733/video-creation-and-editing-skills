@@ -1,11 +1,11 @@
-# Video Production Skills
+# Video Creation and Editing Skills
 
-Reusable Codex skills for creating and editing instructional product videos. The workflow is based on a completed, long-form product walkthrough assembled from genuine demo captures, Piper narration, timed captions, and FFmpeg renders.
+Reusable Codex skills for planning, creating, editing, and reviewing many kinds of video: personal stories, explainers, product demos, marketing pieces, social clips, event videos, footage recuts, photo stories, motion graphics, and AI-assisted video.
 
 ## Skills
 
-- [`creating-instructional-videos`](skills/creating-instructional-videos/SKILL.md) — plan and produce a narrated product or software walkthrough from an authorized app session and approved source material.
-- [`editing-instructional-videos`](skills/editing-instructional-videos/SKILL.md) — revise, caption, re-render, inspect, and deliver an existing video while keeping edits reproducible.
+- [`creating-videos`](skills/creating-videos/SKILL.md) — develop a creative brief, script, storyboard, visuals, voice, and finished video from a concept or source material.
+- [`editing-videos`](skills/editing-videos/SKILL.md) — revise, recut, caption, enhance, review, and export existing video while keeping edits reproducible.
 
 ## Install in Codex
 
@@ -14,23 +14,24 @@ Copy either skill folder into your Codex skills folder. On Windows PowerShell:
 ```powershell
 $targetRoot = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME 'skills' } else { Join-Path $env:USERPROFILE '.codex\skills' }
 New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
-Copy-Item -Recurse '.\skills\creating-instructional-videos' $targetRoot
-Copy-Item -Recurse '.\skills\editing-instructional-videos' $targetRoot
+Copy-Item -Recurse '.\skills\creating-videos' $targetRoot
+Copy-Item -Recurse '.\skills\editing-videos' $targetRoot
 ```
 
-For a repo-local or other agent runtime, copy the `skills` folders to that runtime's supported skills directory. Invoke a skill explicitly with `$creating-instructional-videos` or `$editing-instructional-videos`; automatic discovery can also use each skill's description.
+For a repo-local or other agent runtime, copy the `skills` folders to that runtime's supported skills directory. Invoke a skill explicitly with `$creating-videos` or `$editing-videos`; automatic discovery can also use each skill's description.
 
-## Start a production
+## Start a project
 
-1. Copy [`templates/production-brief.md`](templates/production-brief.md) into a project folder and fill in the audience, purpose, roles, platform, length, voice, and output requirements.
-2. Capture only approved, representative app states and create a scene manifest based on [`templates/scene-manifest.example.json`](templates/scene-manifest.example.json).
-3. Keep project scripts, captures, audio, timelines, and exports in that project folder. This repo contains no client/demo footage or account data.
-4. Follow the creation skill for scripting, voice auditions, scene assembly, captions, export, and review. Use the editing skill for later revisions.
+1. Copy [`templates/production-brief.md`](templates/production-brief.md) into your project and describe its purpose, audience, tone, source material, destination, and rights.
+2. Choose the creation mode and visual direction in [`creative-modes.md`](skills/creating-videos/references/creative-modes.md).
+3. If the work uses scenes, create a scene manifest from [`scene-manifest.example.json`](templates/scene-manifest.example.json).
+4. Keep project scripts, footage, generated assets, audio, timelines, and exports in that project's folder. This repo contains no footage or account data.
+5. Use the creation skill to make the video and the editing skill for revisions or finishing.
 
 ## Tooling and rights
 
-The reference workflow uses local Piper text-to-speech and FFmpeg, with image tools for simple title cards and callouts. Other local or connected tools are optional. Confirm each tool is installed and usable; the skill does not install software or grant provider access. The Lessac `en_US-lessac-medium` voice was selected for the example project, but voice choice is configurable. Check the exact model and dataset license for the intended distribution before production. Treat external generation, stock assets, music, paid services, and publishing as separate choices that require the relevant authorization.
+The skills support source footage, photos, screen recordings, animation, generated video, voiceover, and mixed-media projects. Local Piper text-to-speech and FFmpeg are one optional workflow; editors and connected generation tools are also options when available. Confirm access, actual capabilities, pricing, and rights before relying on a tool. Lessac `en_US-lessac-medium` was selected for the example project, but voice choice is configurable. Treat external processing, stock assets, music, paid services, and publishing as separate choices that require appropriate authorization.
 
 ## Repository scope
 
-This repository provides workflow instructions and templates. It does not include the Three Eagles video, transcript, screenshots, Piper model files, or project scripts. Clone it locally and add project assets in a separate working directory.
+This repository provides workflow instructions and templates. It does not include the example video, transcript, footage, screenshots, voice models, or project-specific scripts. Clone it locally and add project assets in a separate working directory.
