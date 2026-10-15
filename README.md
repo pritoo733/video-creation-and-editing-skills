@@ -1,4 +1,4 @@
-# Video Creation and Editing Agent Skills
+# All-Purpose Video Production Skills for Any LLM
 
 ![Video production journey from research and storyboards through creative editing to a reviewed final cut](assets/video-workflow-hero.png)
 
