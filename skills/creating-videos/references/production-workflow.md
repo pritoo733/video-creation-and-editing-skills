@@ -34,6 +34,8 @@ Before full production, make one representative scene or a small style frame set
 
 For narration or voiceover, use the user's specified voice or audition available candidates when the choice matters. Evaluate pronunciation, cadence, expression, pauses, and intelligibility. Do not promise natural-sounding generated speech without listening. Preserve authentic source audio when it matters to the story.
 
+For presenter-led, talking-head, or lip-synced videos, lock the approved narration before planning final cuts, captions, or generated presenter footage. Check the recorded/generated audio against the approved script using speech recognition when available or careful listening; fix meaningful omissions, additions, names, numbers, and pronunciation before editing. Use actual audio and clip durations as timing evidence. Follow [the presenter and talking-head workflow](presenter-workflow.md) for pilots, continuity, synchronization, and resumable production records.
+
 For Piper, select an exact model (Lessac `en_US-lessac-medium` was used in one project). Check the model and underlying voice dataset license for the intended use. Keep selection configurable and exclude model files from the repo.
 
 Synthesize in phrase- or scene-sized units when this makes corrections and timing manageable. Keep pronunciation notes in the project. Audition a representative passage before batching the full script. Leave room around speech edits and preserve the final word.

@@ -19,6 +19,10 @@
 - Sound approach (voice, natural sound, music, effects):
 - Visual references and what to take from them (without copying):
 - Representative frame or sample scene approved:
+- Presentation route (presenter-led, screen demonstration, mixed explainer, voiceover/no presenter):
+- Presenter/likeness rights and external upload approval, if applicable:
+- Narration approval, voice choice, and audio/script verification method:
+- Pilot generation size, retry limit, known cost, and approval record, if applicable:
 
 ## Source material
 - Footage/audio/photos/documents/links:

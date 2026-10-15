@@ -11,11 +11,21 @@
     "model": "SET_AFTER_AUDITION",
     "license_checked_for_distribution": false
   },
+  "narration_timing_if_used": {
+    "locked_audio": "assets/audio/final/narration.wav",
+    "use_audio_duration_as_timeline_reference": true,
+    "transcript_checked_against_audio": false
+  },
   "scenes": [
     {
       "id": "001",
       "chapter": "Opening",
       "title": "Establish the story",
+      "timeline": {
+        "start_seconds": 0,
+        "duration_seconds": 5,
+        "source_in_seconds": 0
+      },
       "source_assets": ["assets/opening-shot.png"],
       "purpose": "Introduce the subject and tone.",
       "narration": "Replace this with approved narration, dialogue, or an empty string when the scene has no voice-over.",

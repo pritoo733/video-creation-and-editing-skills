@@ -6,7 +6,7 @@ Reusable, LLM-provider-neutral skills for the full video lifecycle: research, co
 
 The skills follow the open [Agent Skills format](https://agentskills.io/specification): a folder with a `SKILL.md` file and optional references or templates. They work directly in agent products that load this format. Other LLM setups can use them by adding the relevant `SKILL.md` and referenced files to the model's instructions/context. The skills do not depend on a specific model provider; access to browsing, editing, voice, and video-generation tools depends on the host environment.
 
-The workflow emphasizes evidence-backed scripts, a visual treatment tailored to the brief, an early representative style sample, and a coverage-based review of the exported video. It was informed in part by the [awesome-claude-video-skills catalog and its published end-to-end comparison](https://github.com/zhuyansen/awesome-claude-video-skills); this repository adopts general production and review lessons without requiring any listed provider or toolkit.
+The workflow emphasizes evidence-backed scripts, a visual treatment tailored to the brief, an early representative style sample, audio-led timing for presenter videos, and a coverage-based review of the exported video. It was informed in part by the [awesome-claude-video-skills catalog and its published end-to-end comparison](https://github.com/zhuyansen/awesome-claude-video-skills) and [lanshu-create-ai-presenter-video](https://github.com/cclank/lanshu-create-ai-presenter-video); this repository adopts general production and review lessons without requiring any listed provider or toolkit.
 
 ## Skills
 
@@ -30,7 +30,7 @@ If your agent has no skill loader, include the desired `SKILL.md` and its linked
 
 1. Copy [`templates/production-brief.md`](templates/production-brief.md) into your project and describe its purpose, audience, tone, source material, destination, and rights.
 2. Research and script using [`research-and-script-ledger.md`](templates/research-and-script-ledger.md) when factual material needs sources.
-3. Choose a creative mode, write a visual treatment, gather or create visuals, and plan scenes from [`scene-manifest.example.json`](templates/scene-manifest.example.json). For multi-step videos, copy the [`coverage matrix`](templates/coverage-matrix.md) to track every required point through final review.
+3. Choose a creative mode, write a visual treatment, gather or create visuals, and plan scenes from [`scene-manifest.example.json`](templates/scene-manifest.example.json). For presenter or talking-head videos, follow the optional [presenter workflow](skills/creating-videos/references/presenter-workflow.md). For multi-step videos, copy the [`coverage matrix`](templates/coverage-matrix.md) to track every required point through final review.
 4. Keep project scripts, footage, generated assets, audio, timelines, and exports in the project folder. This repo contains no footage or account data.
 5. Invoke `creating-videos` to carry the work through production, editing, review, and final delivery. Invoke `editing-videos` on its own when you already have a video and only need changes.
 

@@ -16,6 +16,7 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 - Check names, acronyms, numbers, pauses, pace, tone, clipping, clicks, and room/noise artifacts. Generated speech may sound unnatural even when the words are correct.
 - Compare captions against the final audio, including scene edits, pauses, line breaks, long reading times, overlaps, and final words. Recalculate timing after edits; do not reuse timestamps from replaced audio.
 - Check dialogue/music balance and peak level. Keep important speech clear, avoid clipping, and omit music that competes with the story or lacks usage rights.
+- For presenter or lip-synced footage, verify identity consistency, mouth timing against the approved audio, natural gestures and blinking, hands, lighting, framing, segment seams, frozen sections, and a clean settled ending.
 
 ## Technical export
 
