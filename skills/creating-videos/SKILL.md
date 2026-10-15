@@ -21,6 +21,8 @@ Check the available browser, research, capture, audio, editing, and rendering to
 
 For a film-like or footage-led brief, plan shots from actual source media before building layouts. A succession of text cards, screenshot pans, or a moving progress bar does not fulfill that brief. Review a rendered passage containing real action and at least one edit before scaling production. Static frames establish art direction; they do not establish motion or editorial quality. Tutorials and diagrams may hold when viewers need time to understand them.
 
+For narrated promos, plan several distinct, script-matched visuals within longer sentences. Do not reuse one background clip under a run of changing titles or screenshots. Describe each shot's visible action and why it supports that precise beat; check the adjacent sequence for repeated source, screenshot, crop, and composition. Use deliberate phrase/action changes at a pace viewers can follow, while allowing interfaces and disclosures time to read. See [visual storytelling](references/visual-storytelling.md).
+
 ## Required production record
 
 Maintain these project artifacts as they become available:

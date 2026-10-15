@@ -6,6 +6,8 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 
 - Check the opening, each chapter transition, every scene change, and the closing. Confirm that visuals support the narration and the sequence is understandable without hidden context.
 - Inspect the first and last frames of every shot. Look for black frames, jumps, stale or mismatched captures, cursor obstruction, cropped controls, clipped graphics, and accidental blank space.
+- For each long spoken sentence or beat, confirm the plan and final film use multiple distinct visuals where the narration supports them. Check the full-frame source as well as overlays; reject repeated background footage behind a sequence of changing screenshots. Inspect adjacent source actions, screenshots, crops, and compositions for duplication, and check that each visual directly illustrates or evidences its beat.
+- Use an intentional shot change roughly every 1.5–3 seconds as a promotional-montage starting point. Adapt for the action and reading time; preserve stable tutorial steps and disclosures. Avoid frame-by-frame flashing and cuts that are too fast to understand.
 - Confirm that spoken claims match the source and on-screen state. Preserve qualifiers; do not convert examples, calculated scenarios, demos, or empty states into proof or promises.
 - Verify that masking is complete and does not hide a control needed to understand the workflow.
 - Confirm title cards, role labels, brand marks, and overlays remain consistent and inside safe margins.

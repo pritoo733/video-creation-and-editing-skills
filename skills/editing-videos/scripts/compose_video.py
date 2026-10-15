@@ -147,19 +147,29 @@ def render(data, base, output, work, ffmpeg, scale=1):
             pending.replace(clip)
         transition=shot.get('transition',{'type':'cut','duration':0})
         cursor-=transition.get('duration',0)
-        edit_record.append(dict(index=i,start=cursor,end=cursor+duration,source=str(path),source_in=shot.get('in',0),type=shot.get('type','video'),kind=shot.get('kind','owned'),purpose=shot['purpose'],transition=transition))
+        edit_record.append(dict(index=i,start=cursor,end=cursor+duration,source=str(path),source_in=shot.get('in',0),type=shot.get('type','video'),kind=shot.get('kind','owned'),purpose=shot['purpose'],visual_id=shot.get('visual_id'),beat_id=shot.get('beat_id'),source_id=shot.get('source_id'),screen_id=shot.get('screen_id'),visual_action=shot.get('visual_action'),why_it_fits=shot.get('why_it_fits'),transition=transition))
         cursor+=duration;clips.append(clip)
         print(f'SHOT {i+1}/{len(data["shots"])} {duration:.2f}s',flush=True)
     cmd=[ffmpeg,'-hide_banner','-loglevel','error','-y']
     for clip in clips: cmd+=['-i',str(clip)]
     if data.get('audio'): cmd+=['-i',str(media_path(base,data['audio']))]
-    filters=[f'[{i}:v]format=yuv420p,fps={fps},settb=AVTB[s{i}]' for i in range(len(clips))]
-    current='s0'; length=data['shots'][0]['duration']
-    for i,shot in enumerate(data['shots'][1:],1):
-        trans=shot.get('transition',{'type':'cut','duration':0}); overlap=trans.get('duration',0); nxt=f'join{i}'
-        if not overlap: filters.append(f'[{current}][s{i}]concat=n=2:v=1:a=0,fps={fps},settb=AVTB[{nxt}]')
-        else: filters.append(f'[{current}][s{i}]xfade=transition={trans["type"]}:duration={overlap}:offset={length-overlap}[{nxt}]')
-        length+=shot['duration']-overlap;current=nxt
+    hard_cuts=all(shot.get('transition',{'type':'cut','duration':0}).get('duration',0)==0 for shot in data['shots'][1:])
+    if hard_cuts:
+        # The normalized shot files are already CFR at the target fps. Concatenating
+        # all of them in one filter preserves every frame; serial pairwise concat
+        # plus repeated fps/timebase conversion can lose frames at each boundary.
+        filters=[f'[{i}:v]format=yuv420p[s{i}]' for i in range(len(clips))]
+        joined=''.join(f'[s{i}]' for i in range(len(clips)))
+        filters.append(f'{joined}concat=n={len(clips)}:v=1:a=0[sequence]')
+        current='sequence'
+    else:
+        filters=[f'[{i}:v]format=yuv420p,fps={fps},settb=AVTB[s{i}]' for i in range(len(clips))]
+        current='s0'; length=data['shots'][0]['duration']
+        for i,shot in enumerate(data['shots'][1:],1):
+            trans=shot.get('transition',{'type':'cut','duration':0}); overlap=trans.get('duration',0); nxt=f'join{i}'
+            if not overlap: filters.append(f'[{current}][s{i}]concat=n=2:v=1:a=0,fps={fps},settb=AVTB[{nxt}]')
+            else: filters.append(f'[{current}][s{i}]xfade=transition={trans["type"]}:duration={overlap}:offset={length-overlap}[{nxt}]')
+            length+=shot['duration']-overlap;current=nxt
     if data.get('captions'):
         filters.append(f"[{current}]subtitles=filename='{filter_path(media_path(base,data['captions']))}'[captioned]")
         current='captioned'

@@ -11,6 +11,18 @@ Use for promotional films, brand pieces, social edits, footage-led explainers, a
 5. Let the cut follow an action, sentence turn, reveal, or musical phrase. Use a clean cut for continuity; a short dissolve for a change of time or place; a directional or match transition when the visual relationship supports it. Repeated flashy wipes and transitions on every cut can weaken the story.
 6. Carry a continuous narration or ambience bed across visual cuts when it improves continuity. For dialogue edits, preserve complete statements and use J/L cuts only when they preserve source meaning and synchronization.
 
+## Keep each spoken beat visually alive and specific
+
+For promotional montages, split a long sentence at its clauses, actions, or list items and plan more than one visual for that sentence. A useful starting pace is a purposeful change about every 1.5–3 seconds, then adjust for action and reading time. Give very short phrases a compact montage when it helps enumerate distinct ideas. Do not change every frame: viewers need time to register the action, product state, caption, and transition.
+
+- Do not hold the same stock clip underneath several changing screenshots or headings. Change the full-frame source as well as the foreground; alternate product evidence with a different, relevant contextual action.
+- Avoid repeating the same source interval, screenshot, crop, or composition in consecutive shots. Prefer a new shot scale, angle, source, or app state. If an asset must recur, leave enough visual distance and use a different passage that shows a different action.
+- Write a short visual_action describing what visibly changes and a why_it_fits linking it to the exact narration beat. “Looks professional” or a shared keyword is not a story relationship.
+- Use owned product captures to substantiate product behavior. Use stock to establish the real-world context around it, and label it as illustrative when viewers could mistake it for a customer, transaction, result, or product feature.
+- Check the whole sequence for story fit, adjacent repetition, shot length, readable interface details, and cut rhythm. A sequence can have many unique clips and still feel random if each shot does not explain its beat.
+
+Change shots at action or phrase boundaries, not mechanically on a timer. Let a tutorial step, legal disclosure, or detailed interface stay visible long enough to understand. See [the review checklist](../../editing-videos/references/review-checklist.md) for the final visual-coverage gate.
+
 Use project-local copies of the repository's `shot-list.md` and asset ledger when the project merits them. A shot is an actual source interval or designed action; changing a title or highlighting a numbered card alone does not make a new shot.
 
 ## Integrate graphics and camera movement
