@@ -1,0 +1,29 @@
+{
+  "project": "sample-product-walkthrough",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "frame_rate": 24,
+    "language": "en-US"
+  },
+  "voice": {
+    "engine": "piper",
+    "model": "SET_AFTER_AUDITION",
+    "license_checked_for_distribution": false
+  },
+  "scenes": [
+    {
+      "id": "001",
+      "chapter": "Getting started",
+      "title": "Choose the right workspace",
+      "source_assets": ["captures/01-role-entry.png"],
+      "purpose": "Show first-time users where to enter their role's portal.",
+      "narration": "Start by choosing the workspace that matches your role. The options and permissions available to you depend on your account.",
+      "visual_notes": ["Show the role options", "Keep the demo notice visible"],
+      "capture_actions": ["Open the sign-in page", "Pause on role choices"],
+      "sensitive_regions": [],
+      "captions": [],
+      "transition": "Cut to the selected role dashboard"
+    }
+  ]
+}

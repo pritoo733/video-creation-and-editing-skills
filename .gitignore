@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.m4a
+*.srt
+*.ass
+*.onnx
+*.onnx.json
+captures/
+renders/
+working/
+secrets.env
+.env
