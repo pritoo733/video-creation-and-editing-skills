@@ -1,26 +1,28 @@
-# Video Creation and Editing Skills
+# Video Creation and Editing Agent Skills
 
 **Repository:** [github.com/pritoo733/video-creation-and-editing-skills](https://github.com/pritoo733/video-creation-and-editing-skills)
 
-Reusable Codex skills for the full video lifecycle: research, concept development, scripting, asset preparation, video creation, editing, quality review, and delivery. They support personal stories, explainers, product demos, marketing pieces, social clips, events, footage recuts, motion graphics, and AI-assisted video.
+Reusable, LLM-provider-neutral skills for the full video lifecycle: research, concept development, scripting, asset preparation, video creation, editing, quality review, and delivery. They support personal stories, explainers, product demos, marketing pieces, social clips, events, footage recuts, motion graphics, and AI-assisted video.
+
+The skills follow the open [Agent Skills format](https://agentskills.io/specification): a folder with a `SKILL.md` file and optional references or templates. They work directly in agent products that load this format. Other LLM setups can use them by adding the relevant `SKILL.md` and referenced files to the model's instructions/context. The skills do not depend on a specific model provider; access to browsing, editing, voice, and video-generation tools depends on the host environment.
 
 ## Skills
 
 - [`creating-videos`](skills/creating-videos/SKILL.md) — take a video from idea through research, script, production, editing, review, and a finished export.
 - [`editing-videos`](skills/editing-videos/SKILL.md) — revise, recut, caption, enhance, review, and export existing video while keeping edits reproducible.
 
-## Install in Codex
+## Install in an agent
 
-Copy either skill folder into your Codex skills folder. On Windows PowerShell:
+Copy either skill folder into the skills directory scanned by your LLM agent. Keep each folder's references alongside its `SKILL.md`. For example, on Windows PowerShell:
 
 ```powershell
-$targetRoot = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME 'skills' } else { Join-Path $env:USERPROFILE '.codex\skills' }
-New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
-Copy-Item -Recurse '.\skills\creating-videos' $targetRoot
-Copy-Item -Recurse '.\skills\editing-videos' $targetRoot
+$agentSkillsDirectory = 'SET_TO_YOUR_AGENT_SKILLS_DIRECTORY'
+New-Item -ItemType Directory -Force -Path $agentSkillsDirectory | Out-Null
+Copy-Item -Recurse '.\skills\creating-videos' $agentSkillsDirectory
+Copy-Item -Recurse '.\skills\editing-videos' $agentSkillsDirectory
 ```
 
-For a repo-local or other agent runtime, copy the `skills` folders to that runtime's supported skills directory. Invoke a skill explicitly with `$creating-videos` or `$editing-videos`; automatic discovery can also use each skill's description.
+If your agent has no skill loader, include the desired `SKILL.md` and its linked references in the task context. Use the invocation method supported by your agent, or ask for the video workflow in plain language.
 
 ## Start a project
 
