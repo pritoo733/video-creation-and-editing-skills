@@ -1,5 +1,7 @@
 # Video Creation and Editing Agent Skills
 
+![Video production journey from research and storyboards through creative editing to a reviewed final cut](assets/video-workflow-hero.png)
+
 **Repository:** [github.com/pritoo733/video-creation-and-editing-skills](https://github.com/pritoo733/video-creation-and-editing-skills)
 
 Reusable, LLM-provider-neutral skills for the full video lifecycle: research, concept development, scripting, asset preparation, video creation, editing, quality review, and delivery. They support personal stories, explainers, product demos, marketing pieces, social clips, events, footage recuts, motion graphics, and AI-assisted video.
