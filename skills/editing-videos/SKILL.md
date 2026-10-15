@@ -1,6 +1,6 @@
 ---
 name: editing-videos
-description: Use when revising, recutting, captioning, enhancing, reviewing, or exporting existing footage, a social clip, story, explainer, screen recording, or other video.
+description: Use when an existing assembled video or cut needs revisions, recutting, captioning, enhancement, review, or export. For making a new video from an idea or raw footage, use creating-videos.
 ---
 
 # Editing Videos

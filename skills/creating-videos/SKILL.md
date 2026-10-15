@@ -1,11 +1,20 @@
 ---
 name: creating-videos
-description: Use when a user wants an end-to-end video made from an idea or source material, including research, scripting, production, editing, review, and delivery.
+description: Use when a user wants a new video made from an idea, research, supplied footage, a screen recording, a reference, or generated assets. Use for end-to-end production, including when raw footage is provided; use editing-videos when they only want an existing cut changed or reviewed.
 ---
 
 # Creating Videos
 
-Own the full lifecycle: research when needed, concept and script, source and create assets, produce footage/audio, edit the video, review it, and deliver the final export. Do not stop after a script, storyboard, or rough cut when the user asked for a finished video. Read [the production workflow](references/production-workflow.md); load [research and scripting](references/research-and-scripting.md), [creative modes](references/creative-modes.md), [visual direction](references/visual-direction.md), [reference-video analysis](references/reference-video-analysis.md), [source-based recaps and dubbing](references/source-based-video.md), [presenter and talking-head workflow](references/presenter-workflow.md), or [the app-capture guide](references/app-capture.md) when relevant. Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production.
+Own the full lifecycle: research when needed, concept and script, source and create assets, produce footage/audio, edit the video, review it, and deliver the final export. Do not stop after a script, storyboard, or rough cut when the user asked for a finished video. Read [the production workflow](references/production-workflow.md), then load only the specialist guides that fit the request:
+
+- New idea, factual topic, or current claims: [research and scripting](references/research-and-scripting.md).
+- Supplied footage to recap, adapt, or dub: [source-based video](references/source-based-video.md).
+- Supplied reference video to analyze: [reference-video analysis](references/reference-video-analysis.md).
+- Presenter or talking head: [presenter workflow](references/presenter-workflow.md).
+- App or website walkthrough: [app-capture guide](references/app-capture.md).
+- Animation, generated visuals, or a motion-led treatment: [creative modes](references/creative-modes.md) and [visual direction](references/visual-direction.md).
+
+Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production. When the user only wants changes to an already assembled video, start with the editing skill instead.
 
 Check the available browser, research, capture, audio, editing, and rendering tools early. Choose a feasible route based on actual access and capability. Continue useful stages if a tool is missing; clearly state the blocker and provide the best available deliverable without claiming that an uncreated video is finished.
 

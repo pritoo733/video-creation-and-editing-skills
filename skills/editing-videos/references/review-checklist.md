@@ -16,11 +16,16 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 - Check names, acronyms, numbers, pauses, pace, tone, clipping, clicks, and room/noise artifacts. Generated speech may sound unnatural even when the words are correct.
 - Compare captions against the final audio, including scene edits, pauses, line breaks, long reading times, overlaps, and final words. Recalculate timing after edits; do not reuse timestamps from replaced audio.
 - Check dialogue/music balance and peak level. Keep important speech clear, avoid clipping, and omit music that competes with the story or lacks usage rights.
+- Listen on headphones and ordinary speakers at normal playback volume. If the destination specifies loudness or true-peak limits, measure the final mix against its current requirements and record the readings; do not assume one target fits every platform.
+- Check caption contrast against every background, placement and safe margins, line breaks, reading time, and obstruction of faces or essential interface text. Provide a transcript or audio description when the brief or viewing context calls for them.
+- Check graphics for sufficient text/background contrast and avoid rapid flashing or flicker that could make the video unsafe to view. Review at the intended playback size, including a phone-sized view when relevant.
 - For presenter or lip-synced footage, verify identity consistency, mouth timing against the approved audio, natural gestures and blinking, hands, lighting, framing, segment seams, frozen sections, and a clean settled ending.
 
 ## Technical export
 
 Use FFprobe or an equivalent tool to inspect the deliverable. Confirm the container decodes end to end, expected video dimensions and frame rate, duration, audio stream and sample rate, subtitle sidecar or burned-in captions, and sensible file size. A successful metadata probe alone does not establish that the file plays correctly.
+
+For a named destination, verify its current export, caption, safe-area, and audio requirements from an authoritative source. Record the delivery profile used so later exports can be reproduced.
 
 Example FFmpeg checks:
 
