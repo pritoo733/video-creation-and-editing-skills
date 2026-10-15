@@ -11,6 +11,8 @@ Make changes for the user's creative goal and intended destination, preserve mea
 
 Before editing, identify the source, current cut, requested changes, audience, destination, creative intent, and protected shots/audio/wording. Keep originals. Record affected ranges and changes in an edit manifest or existing editor timeline.
 
+Check that the media opens and note its duration, frame size, frame rate, orientation, audio channels, and available free storage before choosing an edit path. Confirm the actual editor/encoder capabilities and platform support; do not assume a plugin, model, font, or export feature is installed. Preserve an untouched source and work in a project copy or reversible timeline. Do not silently install software or upload source media to an external service; explain the setup or upload and obtain authorization where needed. See [the editing preflight](references/editing-preflight.md).
+
 For personal stories, preserve the speaker's meaning and the emotional reason behind the material. For factual or commercial work, preserve qualifications and evidence. For app footage, retain meaningful labels, disclosures, and UI context. Document masking, cropping, generated shots, and replacements. Regenerate captions after any timing or dialogue change.
 
 Make one representative edit first when the change introduces a new treatment. Review it at intended playback size before applying it throughout. Use available local tools where practical; check cost and authorization before external processing.

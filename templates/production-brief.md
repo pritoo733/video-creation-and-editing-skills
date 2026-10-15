@@ -18,6 +18,8 @@
 - Palette, typography, framing, motion, and transition direction:
 - Sound approach (voice, natural sound, music, effects):
 - Visual references and what to take from them (without copying):
+- Reference techniques to keep, adapt, and change:
+- Motion thesis and beat sheet location, if applicable:
 - Representative frame or sample scene approved:
 - Presentation route (presenter-led, screen demonstration, mixed explainer, voiceover/no presenter):
 - Presenter/likeness rights and external upload approval, if applicable:
@@ -27,6 +29,9 @@
 ## Source material
 - Footage/audio/photos/documents/links:
 - Source of truth for factual claims:
+- Source timecodes, transcript, or scene map for supplied video/audio:
+- Target language and localization requirements, if applicable:
+- Original speech, sound, or sequence elements to retain:
 - People, locations, releases, and permissions:
 - Privacy details to remove or mask:
 - Generated visuals or AI tools allowed:

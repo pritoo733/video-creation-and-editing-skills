@@ -11,6 +11,8 @@ Start with the user's goal and available material. These modes can be combined.
 | Social short | One idea, strong opening, focused payoff | Is the message understandable on a phone with sound off? |
 | Presenter or talking-head explainer | Approved script/audio, presentation route, supporting visuals | Is the person natural and in sync, and do cutaways clarify each beat? |
 | Footage edit or event recap | Source review, story beats, clean audio moments | Do cuts preserve chronology, context, and important moments? |
+| Source-based recap or adaptation | Source map, transcript, key frames, editorial point of view | Can every narrated claim and chosen cut be traced to the supplied source? |
+| Translation or dubbed video | Corrected transcript, target audience/language, timing plan | Does the dub preserve meaning, sound natural, and fit the scene timing? |
 | AI-assisted visual story | Visual treatment, prompts, continuity reference | Are artifacts acceptable, and could viewers mistake generated shots for evidence? |
 | Interview | Strong complete statements, supporting B-roll | Does the edit preserve speaker meaning and sync? |
 

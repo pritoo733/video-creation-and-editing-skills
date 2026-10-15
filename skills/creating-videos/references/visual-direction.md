@@ -17,6 +17,8 @@ Write a concise treatment that answers:
 
 Tie choices to the brief. A calm personal story may need held images and natural sound; a software tutorial may need stable captures, highlighted controls, and enough reading time. Do not add motion, music, texture, or effects just to make a static sequence feel busy.
 
+For motion-led work, add a one-sentence **motion thesis**: the visual metaphor or changing state that carries the central idea through time. Then map the script into a **beat graph**: for each beat, state what viewers see at the beginning, what changes, what they should notice, and what state leads into the next beat. Reuse [the visual beat sheet](../../../templates/visual-beat-sheet.md) when it helps.
+
 ## Check the look before scaling
 
 Create one representative frame, opening, or short scene before producing many assets. Include the intended title or caption treatment, a real source visual, typical motion, and representative sound when possible. Inspect it at the expected delivery size and ask:
@@ -29,6 +31,8 @@ Create one representative frame, opening, or short scene before producing many a
 - Are visual references used as inspiration without copying protected footage, artwork, or a living creator's distinctive style?
 
 Revise the treatment and sample before applying it to the full video when any answer reveals a material problem. For long videos, establish a small set of scene patterns and vary them intentionally while keeping typography, color, and motion coherent.
+
+For videos that promise animation or cinematic motion, check for static-slide drift: each scene should have a meaningful visual event, state change, camera move, or purposeful hold. If motion does not clarify an idea or feeling, remove it. Purposeful stillness is valid when the treatment calls for it.
 
 ## Keep variation purposeful
 
