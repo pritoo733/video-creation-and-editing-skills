@@ -11,7 +11,7 @@ Own the full lifecycle: research when needed, concept and script, source and cre
 - Supplied footage to recap, adapt, or dub: [source-based video](references/source-based-video.md).
 - Supplied reference video to analyze: [reference-video analysis](references/reference-video-analysis.md).
 - Presenter or talking head: [presenter workflow](references/presenter-workflow.md).
-- App or website walkthrough: [app-capture guide](references/app-capture.md).
+- App or website walkthrough: [app-capture guide](references/app-capture.md), including fixed-scale UI framing and readable scroll captures.
 - Animation, generated visuals, or a motion-led treatment: [creative modes](references/creative-modes.md) and [visual direction](references/visual-direction.md).
 - Promotional, brand, social, or footage-led work: [visual storytelling](references/visual-storytelling.md) and [stock sourcing](references/stock-footage.md). Choose an execution route with [production tooling](references/production-tooling.md).
 

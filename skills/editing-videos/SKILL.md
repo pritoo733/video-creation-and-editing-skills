@@ -9,6 +9,8 @@ Make changes for the user's creative goal and intended destination, preserve mea
 
 For a footage-led timeline with local media, use [shot composition](references/shot-composition.md) for the optional manifest renderer, timed overlays, transitions, caching, and motion diagnostics. Choose real source actions and edit points before styling; a sequence of animated text layouts is insufficient when the brief calls for a film.
 
+For website or app shots, use [interface motion](references/interface-motion.md): preserve readable full-width framing, start at a fixed scale, and reveal relevant content with a paced browser scroll or a scrolling full-page capture. Ordinary screenshots should not receive an automatic zoom treatment.
+
 ## Edit contract
 
 Before editing, identify the source, current cut, requested changes, audience, destination, creative intent, and protected shots/audio/wording. Keep originals. Record affected ranges and changes in an edit manifest or existing editor timeline.

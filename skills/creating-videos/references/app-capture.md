@@ -17,9 +17,12 @@ Use this reference for product demos, onboarding videos, and software tutorials 
 - Do not type into production forms for a demonstration. If typing is needed, use a test environment and fictional data approved for capture.
 - Preserve relevant demo/sample notices, empty states, and status labels. Do not make an empty page look populated or imply that a preview is a completed transaction.
 - Capture each screen at native resolution. Make separate close-up captures when text must be readable; never upscale tiny text and present it as legible.
+- For a page reveal, capture a real scroll with pauses on the sections discussed in the script. A tall full-page screenshot is an alternative for passive content; inspect it for lazy-loading gaps and stitching artifacts. A viewport screenshot alone cannot reveal offscreen content.
 - After a sequence, inspect files for readability, stale toasts, personal data, unexpected state changes, and missing screens. Record every rejected capture and why it was replaced.
 
 ## After capture
+
+Plan the edit with [interface framing and scrolling](../../editing-videos/references/interface-motion.md). Keep ordinary UI shots at a fixed, readable scale. Use a full-width scrolling viewport to reveal a tall capture, with a short initial hold, a smooth vertical move, and a final reading hold. Use a real recording for sticky headers, nested panels, or interaction. Allocate enough time for the content instead of forcing the move into a short montage slot.
 
 Maintain an asset index with file name, role, app area, capture date, source environment, short description, and any masking applied. Blur only exposed sensitive values and transient personal content; retain a clean source copy in protected project storage. Log what was obscured and verify the blur in the final render.
 

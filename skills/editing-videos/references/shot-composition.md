@@ -45,7 +45,11 @@ For a narrated montage, give every shot a globally unique `visual_id`, a `beat_i
 }
 ```
 
-`fit` defaults to `cover`; `contain` retains the whole frame with padding. `focus_x`/`focus_y` range from zero to one. Image shots may use `motion: {"zoom_start": 1.0, "zoom_end": 1.08}` for a purposeful push. This is a still-image move, not evidence of native footage. Overlays use the manifest's pixel coordinates; `--scale 0.5` scales the canvas and overlay geometry for a preview. Review the final-size export separately.
+`fit` defaults to `contain` for shots marked `content_type: "interface"` or with a `screen_id`, retaining the whole screen with padding. Other shots default to `cover`. `focus_x`/`focus_y` range from zero to one and affect cover cropping. No shot receives motion unless specified. Non-UI images may use `motion: {"zoom_start": 1.0, "zoom_end": 1.08}` for a purposeful push. Ordinary UI shots should stay at a fixed scale; interface zoom above 1.03 requires a `framing_reason` explaining an intentional close-up. These are still-image moves, not evidence of native footage.
+
+For a tall page image, use `motion.type: "scroll"` to reveal content vertically at a constant full-width scale, with endpoint holds and easing. See [interface motion](interface-motion.md) for the complete example, normalized scroll ranges, capture choices, limitations, and reading-time checks. Captured scroll videos play directly without this image-motion setting. A continuous interface reading beat can use `reading_reason` to explain why it needs more time without a cut.
+
+Overlays use the manifest's pixel coordinates; `--scale 0.5` scales the canvas, scrolling viewport, and overlay geometry for a preview. Review the final-size export separately.
 
 For `kind: "stock"`, add a `rights` object containing `source_url`, `license_url`, `checked_on`, `evidence` (a saved local evidence file), `status: "reviewed"`, and `intended_use`. The renderer checks record completeness; an operator must actually verify the terms and chosen use. It does not establish rights from a URL or flag.
 

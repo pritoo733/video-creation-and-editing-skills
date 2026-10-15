@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -20,6 +21,33 @@ def media_path(base, value):
     if not p.is_file():
         raise ValueError(f'Missing local media: {p}')
     return p
+
+def is_interface(shot):
+    return shot.get('content_type') == 'interface' or bool(shot.get('screen_id'))
+
+def shot_fit(shot):
+    return shot.get('fit', 'contain' if is_interface(shot) else 'cover')
+
+def image_dimensions(ffmpeg, path):
+    result = subprocess.run([ffmpeg, '-hide_banner', '-i', str(path), '-vf', 'showinfo',
+                             '-frames:v', '1', '-f', 'null', '-'], capture_output=True, text=True)
+    match = re.search(r'\bs:(\d+)x(\d+)\b', result.stderr)
+    if result.returncode or not match:
+        raise RuntimeError(f'Cannot inspect scroll image dimensions: {path}\n{result.stderr[-1000:]}')
+    return tuple(map(int, match.groups()))
+
+def scroll_filter(motion, duration, fps, w, h):
+    # Scroll the full-width source before fitting; containing the tall image first
+    # would shrink all its text and discard the viewport's scrollable content.
+    start = motion.get('hold_start', .4)
+    end = motion.get('hold_end', .4)
+    span = (round(duration*fps)-1)/fps-start-end
+    progress = f'clip((t-{start})/{span},0,1)'
+    if motion.get('easing', 'smoothstep') == 'smoothstep':
+        progress = f'({progress})*({progress})*(3-2*({progress}))'
+    first = motion.get('from_y', 0); last = motion.get('to_y', 1)
+    y = f'(ih-oh)*({first}+({last}-{first})*({progress}))'
+    return f"scale={w}:-2,crop={w}:{h}:0:'{y}':exact=1"
 
 def validate(data, base):
     fmt = data['format']
@@ -39,7 +67,7 @@ def validate(data, base):
         number(shot.get('in', 0), 'source in')
         if shot.get('type', 'video') not in ('video', 'image'):
             raise ValueError('shot type must be video or image')
-        if shot.get('fit', 'cover') not in ('cover', 'contain'):
+        if shot_fit(shot) not in ('cover', 'contain'):
             raise ValueError('fit must be cover or contain')
         media_path(base, shot['path'])
         if not shot.get('purpose'):
@@ -67,8 +95,34 @@ def validate(data, base):
         for key in ('focus_x', 'focus_y'):
             number(shot.get(key, .5), key, 0, 1)
         if 'motion' in shot:
-            for key in ('zoom_start', 'zoom_end'):
-                number(shot['motion'].get(key, 1), key, 1, 3)
+            motion = shot['motion']
+            if not isinstance(motion, dict):
+                raise ValueError('motion must be an object')
+            mode = motion.get('type', 'zoom')
+            if mode == 'scroll':
+                if shot.get('type', 'video') != 'image':
+                    raise ValueError('scroll motion requires an image; use captured video directly')
+                if 'zoom_start' in motion or 'zoom_end' in motion:
+                    raise ValueError('scroll motion keeps constant scale; remove zoom settings')
+                first = number(motion.get('from_y', 0), 'scroll from_y', 0, 1)
+                last = number(motion.get('to_y', 1), 'scroll to_y', 0, 1)
+                if first == last:
+                    raise ValueError('scroll from_y and to_y must differ; use a static shot to hold')
+                start = number(motion.get('hold_start', .4), 'scroll hold_start', 0, duration)
+                end = number(motion.get('hold_end', .4), 'scroll hold_end', 0, duration)
+                if start+end >= (round(duration*fps)-1)/fps:
+                    raise ValueError('scroll holds must leave time to move before the last frame')
+                if motion.get('easing', 'smoothstep') not in ('smoothstep', 'linear'):
+                    raise ValueError('scroll easing must be smoothstep or linear')
+            elif mode == 'zoom':
+                for key in ('zoom_start', 'zoom_end'):
+                    zoom = number(motion.get(key, 1), key, 1, 3)
+                    if is_interface(shot) and zoom > 1.03:
+                        reason = shot.get('framing_reason')
+                        if not isinstance(reason, str) or not reason.strip():
+                            raise ValueError('Interface zoom above 1.03 requires a framing_reason for the intentional close-up')
+            else:
+                raise ValueError('motion type must be zoom or scroll')
         for overlay in shot.get('overlays', []):
             media_path(base, overlay['path'])
             for key in ('x', 'y'):
@@ -109,7 +163,7 @@ def render(data, base, output, work, ffmpeg, scale=1):
         path=media_path(base,shot['path']); duration=shot['duration']
         n=round(duration*fps)
         inputs=[path]+[media_path(base,o['path']) for o in shot.get('overlays',[])]
-        fingerprint=json.dumps(['cfr-v4',shot,w,h,fps,str(ffmpeg),[(str(p),p.stat().st_size,p.stat().st_mtime_ns) for p in inputs]],sort_keys=True)
+        fingerprint=json.dumps(['cfr-v5-interface-scroll',shot,w,h,fps,str(ffmpeg),[(str(p),p.stat().st_size,p.stat().st_mtime_ns) for p in inputs]],sort_keys=True)
         digest=hashlib.sha256(fingerprint.encode()).hexdigest()[:14]
         clip=work/f'shot-{i:03}-{digest}.mp4'
         if not clip.exists():
@@ -117,15 +171,21 @@ def render(data, base, output, work, ffmpeg, scale=1):
             if shot.get('type','video')=='image': cmd+=['-loop','1','-framerate',str(fps),'-i',str(path)]
             else: cmd+=['-ss',str(shot.get('in',0)),'-i',str(path)]
             for p in inputs[1:]: cmd+=['-loop','1','-framerate',str(fps),'-i',str(p)]
-            if shot.get('fit','cover')=='contain':
+            motion=shot.get('motion',{}); scrolling=motion.get('type')=='scroll'
+            if scrolling:
+                sw,sh=image_dimensions(ffmpeg,path)
+                if round(sh*w/sw/2)*2 <= h:
+                    raise ValueError('A scrolling capture must be taller than its viewport at full-width scale; capture more page content or use a static shot')
+                fit=scroll_filter(motion,duration,fps,w,h)
+            elif shot_fit(shot)=='contain':
                 fit=f'scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=0x080f19'
             else:
                 fit=f'scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h}:(iw-ow)*{shot.get("focus_x",.5)}:(ih-oh)*{shot.get("focus_y",.5)}'
             # Normalize cadence before scaling: some builds lose the last frame's
             # duration metadata in scale, causing a later fps filter to drop it.
             filters=[f'[0:v]fps={fps},{fit},setsar=1,trim=duration={duration}']
-            if shot.get('motion'):
-                motion=shot['motion']; z0=motion.get('zoom_start',1); z1=motion.get('zoom_end',1)
+            if motion and not scrolling:
+                z0=motion.get('zoom_start',1); z1=motion.get('zoom_end',1)
                 filters[0]+=f",scale={w*2}:{h*2},zoompan=z='{z0}+({z1}-{z0})*on/{max(1,n-1)}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=1:s={w}x{h}:fps={fps}"
             filters[0]+=',format=yuv420p[v0]'
             current='v0'
@@ -147,7 +207,7 @@ def render(data, base, output, work, ffmpeg, scale=1):
             pending.replace(clip)
         transition=shot.get('transition',{'type':'cut','duration':0})
         cursor-=transition.get('duration',0)
-        edit_record.append(dict(index=i,start=cursor,end=cursor+duration,source=str(path),source_in=shot.get('in',0),type=shot.get('type','video'),kind=shot.get('kind','owned'),purpose=shot['purpose'],visual_id=shot.get('visual_id'),beat_id=shot.get('beat_id'),source_id=shot.get('source_id'),screen_id=shot.get('screen_id'),visual_action=shot.get('visual_action'),why_it_fits=shot.get('why_it_fits'),transition=transition))
+        edit_record.append(dict(index=i,start=cursor,end=cursor+duration,source=str(path),source_in=shot.get('in',0),type=shot.get('type','video'),kind=shot.get('kind','owned'),purpose=shot['purpose'],visual_id=shot.get('visual_id'),beat_id=shot.get('beat_id'),source_id=shot.get('source_id'),screen_id=shot.get('screen_id'),content_type=shot.get('content_type'),fit='width' if shot.get('motion',{}).get('type')=='scroll' else shot_fit(shot),motion=shot.get('motion',{}),framing_reason=shot.get('framing_reason'),reading_reason=shot.get('reading_reason'),visual_action=shot.get('visual_action'),why_it_fits=shot.get('why_it_fits'),transition=transition))
         cursor+=duration;clips.append(clip)
         print(f'SHOT {i+1}/{len(data["shots"])} {duration:.2f}s',flush=True)
     cmd=[ffmpeg,'-hide_banner','-loglevel','error','-y']

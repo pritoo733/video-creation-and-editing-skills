@@ -5,6 +5,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+def interface_shot(shot):
+    return shot.get("content_type") == "interface" or bool(shot.get("screen_id"))
+
 
 def audit(data):
     shots = data.get("shots", [])
@@ -14,6 +17,15 @@ def audit(data):
     beat_order = []
     for i, shot in enumerate(shots):
         label = f"shot {i + 1}"
+        motion = shot.get("motion") if isinstance(shot.get("motion"), dict) else {}
+        if interface_shot(shot):
+            if motion.get("type") == "scroll":
+                if float(shot.get("duration", 0)) < 3:
+                    warnings.append(f"{label}: short interface scroll; inspect its pace and reading pauses")
+            elif shot.get("fit") == "cover":
+                reason = shot.get("framing_reason")
+                if not isinstance(reason, str) or not reason.strip():
+                    warnings.append(f"{label}: interface cover fit can crop controls; use contain or explain the detail framing")
         for key in ("visual_id", "beat_id", "source_id", "visual_action", "why_it_fits"):
             if not isinstance(shot.get(key), str) or not shot[key].strip():
                 errors.append(f"{label}: missing {key}")
@@ -42,7 +54,9 @@ def audit(data):
     for beat, items in beat_shots.items():
         duration = sum(float(shot.get("duration", 0)) for _, shot in items)
         distinct = len({shot.get("visual_id") for _, shot in items})
-        if duration >= 4 and distinct < 2:
+        reading_beat = all(interface_shot(shot) and isinstance(shot.get("reading_reason"), str)
+                           and shot["reading_reason"].strip() for _, shot in items)
+        if duration >= 4 and distinct < 2 and not reading_beat:
             errors.append(f"beat {beat!r}: {duration:.2f}s has fewer than two distinct visuals")
         if any(float(shot.get("duration", 0)) * fps < fps for _, shot in items):
             warnings.append(f"beat {beat!r}: a shot is shorter than one second; confirm it remains readable")

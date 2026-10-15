@@ -11,6 +11,7 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 - Confirm that spoken claims match the source and on-screen state. Preserve qualifiers; do not convert examples, calculated scenarios, demos, or empty states into proof or promises.
 - Verify that masking is complete and does not hide a control needed to understand the workflow.
 - Confirm title cards, role labels, brand marks, and overlays remain consistent and inside safe margins.
+- For website/app shots, inspect [interface framing and scrolling](interface-motion.md): preserve both horizontal edges and orientation cues, keep text at a steady readable size, and check the start/middle/end scroll regions. Review the move at normal speed when available for gentle acceleration, readable pauses, and narration fit. Reject zooms or crops that lose essential controls, rushed full-page sweeps, loading gaps, and captions covering the reading target.
 
 ## Narration and captions
 

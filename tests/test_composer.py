@@ -30,6 +30,25 @@ class ManifestChecks(Fixture):
         for duration in [float('nan'),.01,1.05]:
             self.data['shots'][0]['duration']=duration
             with self.assertRaises(ValueError):composer.validate(self.data,self.base)
+    def test_interface_zoom_requires_a_reason_for_a_closeup(self):
+        self.data['shots'][0].update(screen_id='dashboard',motion=dict(zoom_start=1,zoom_end=1.25))
+        with self.assertRaisesRegex(ValueError,'framing_reason'):
+            composer.validate(self.data,self.base)
+        self.data['shots'][0]['framing_reason']='Inspect the selected status control in a deliberate detail shot'
+        composer.validate(self.data,self.base)
+    def test_invalid_scroll_configuration_is_rejected(self):
+        shot=self.data['shots'][0]
+        cases=[dict(type='scroll',from_y=-.1),dict(type='scroll',to_y=1.1),
+               dict(type='scroll',hold_start=.8,hold_end=.8),
+               dict(type='scroll',zoom_end=1.1),dict(type='scroll',easing='bounce'),
+               dict(type='scroll',from_y=.5,to_y=.5),dict(type='unknown')]
+        for motion in cases:
+            with self.subTest(motion=motion):
+                shot['motion']=motion
+                with self.assertRaises(ValueError):composer.validate(self.data,self.base)
+        shot.update(type='video',motion=dict(type='scroll'))
+        with self.assertRaisesRegex(ValueError,'image'):
+            composer.validate(self.data,self.base)
 
 @unittest.skipUnless(FF,'Set FFMPEG_BIN to run render integration checks')
 class RenderChecks(Fixture):
@@ -62,5 +81,57 @@ class RenderChecks(Fixture):
         with self.assertRaisesRegex(RuntimeError,'Source too short'):
             composer.render(self.data,self.base,self.base/'long.mp4',self.base/'work',FF)
         self.assertFalse(list((self.base/'work').glob('shot-000-??????????????.mp4')))
+    def test_interface_defaults_preserve_both_horizontal_edges(self):
+        row=bytes((0,0,255))*16+bytes((255,0,0))*96+bytes((0,255,0))*16
+        (self.base/'wide.ppm').write_bytes(b'P6\n128 64\n255\n'+row*64)
+        self.data['shots'][0].update(path='wide.ppm',screen_id='dashboard')
+        out=self.base/'interface.mp4'
+        record=composer.render(self.data,self.base,out,self.base/'work',FF)
+        self.assertGreater(self.pixel(out,.5,2,32)[2],200)
+        self.assertGreater(self.pixel(out,.5,60,32)[1],200)
+        self.assertLess(max(self.pixel(out,.5,32,2)),50)
+        self.assertEqual(record['shots'][0]['fit'],'contain')
+    def test_scroll_holds_reaches_both_ends_and_keeps_constant_width(self):
+        pixels=bytearray()
+        for y in range(192):
+            color=((255,0,0),(0,255,0),(0,0,255))[y//64]
+            pixels+=bytes((255,255,255))*4+bytes(color)*56+bytes((255,255,255))*4
+        (self.base/'page.ppm').write_bytes(b'P6\n64 192\n255\n'+pixels)
+        motion=dict(type='scroll',from_y=0,to_y=1,hold_start=.3,hold_end=.3,easing='smoothstep')
+        self.data['shots'][0].update(path='page.ppm',content_type='interface',duration=2,motion=motion)
+        self.data['shots'].append(dict(self.data['shots'][0],motion=dict(motion,from_y=1,to_y=0)))
+        out=self.base/'scroll.mp4'
+        record=composer.render(self.data,self.base,out,self.base/'work',FF)
+        for t,channel in [(0,0),(.2,0),(1,1),(1.7,2),(1.9,2),(2.1,2),(3,1),(3.9,0)]:
+            with self.subTest(time=t):
+                self.assertGreater(self.pixel(out,t,32,32)[channel],200)
+                self.assertGreater(min(self.pixel(out,t,0,32)),200)
+                self.assertGreater(min(self.pixel(out,t,62,32)),200)
+        self.assertEqual(record['shots'][0]['motion'],motion)
+        subprocess.run([FF,'-v','error','-xerror','-i',str(out),'-f','null','-'],check=True)
+        # Measure the source's colored section boundaries in every decoded frame.
+        # This catches reversals, missed endpoint holds, and abrupt start/stop motion.
+        raw=subprocess.run([FF,'-v','error','-i',str(out),'-vf','crop=2:64:32:0',
+                            '-pix_fmt','rgb24','-f','rawvideo','pipe:1'],capture_output=True,check=True).stdout
+        frame_bytes=2*64*3
+        self.assertEqual(len(raw),40*frame_bytes)
+        offsets=[]
+        for i in range(40):
+            frame=raw[i*frame_bytes:(i+1)*frame_bytes]
+            rows=[frame[y*6:y*6+3] for y in range(64)]
+            red=sum(p[0]>180 and p[2]<60 for p in rows)
+            blue=sum(p[2]>180 and p[0]<60 for p in rows)
+            offsets.append(64-red if red else 64+blue)
+        self.assertEqual(offsets[:3],[0]*3)
+        self.assertEqual(offsets[17:20],[128]*3)
+        self.assertTrue(all(a<=b for a,b in zip(offsets[:19],offsets[1:20])))
+        self.assertTrue(all(a>=b for a,b in zip(offsets[20:39],offsets[21:40])))
+        middle_step=offsets[10]-offsets[9]
+        self.assertLess(offsets[5]-offsets[4],middle_step)
+        self.assertLess(offsets[16]-offsets[15],middle_step)
+    def test_scroll_rejects_a_capture_without_vertical_overflow(self):
+        self.data['shots'][0]['motion']=dict(type='scroll')
+        with self.assertRaisesRegex(ValueError,'taller'):
+            composer.render(self.data,self.base,self.base/'scroll.mp4',self.base/'work',FF)
 
 if __name__=='__main__':unittest.main()

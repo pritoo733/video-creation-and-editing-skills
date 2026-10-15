@@ -37,6 +37,25 @@ class VisualSequenceChecks(unittest.TestCase):
         ]})
         self.assertTrue(any("fewer than two distinct visuals" in error for error in errors))
 
+    def test_readable_interface_scroll_can_keep_a_continuous_beat(self):
+        page=shot("page-reveal", "help-page", duration=7, content_type="interface",
+                  motion={"type": "scroll", "from_y": .1, "to_y": .3},
+                  reading_reason="Keep the two instructions visible while each is explained")
+        errors, warnings=visual_audit.audit({"format": {"fps": 30}, "shots": [page]})
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+        del page['reading_reason']
+        self.assertTrue(visual_audit.audit({"shots": [page]})[0])
+
+    def test_unexplained_interface_crop_and_fast_scroll_are_flagged(self):
+        page=shot("page-reveal", "help-page", content_type="interface", fit="cover",
+                  motion={"type": "scroll"})
+        _, warnings=visual_audit.audit({"shots": [page]})
+        self.assertTrue(any("scroll" in warning and "pace" in warning for warning in warnings))
+        page['motion']={"zoom_start": 1, "zoom_end": 1.02}
+        _, warnings=visual_audit.audit({"shots": [page]})
+        self.assertTrue(any("crop" in warning for warning in warnings))
+
 
 if __name__ == "__main__":
     unittest.main()

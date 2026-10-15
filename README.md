@@ -32,6 +32,8 @@ The optional [local shot composer](skills/editing-videos/references/shot-composi
 
 See the [investigation and validated before/after example](examples/footage-promo/validation.md) for the failure analysis, selected stock sources, observed repairs, comparison frames, test results, and review limits.
 
+For website and app videos, follow [interface framing and scrolling](skills/editing-videos/references/interface-motion.md). UI shots default to showing the full frame at a fixed scale; the composer also supports a constant-scale vertical viewport over tall captures, with eased movement and reading pauses. Use real browser recordings for interactive behavior and verify readability at the intended viewing size.
+
 ## Install in an agent
 
 From a local clone, install both skills and shared templates into the directory scanned by your LLM agent. The installer also adjusts template references in the installed copies, so they work outside the checkout. For example, on Windows PowerShell:
