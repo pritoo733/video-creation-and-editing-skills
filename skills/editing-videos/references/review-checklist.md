@@ -30,6 +30,19 @@ ffmpeg -v error -xerror -i final.mp4 -f null -
 
 If the full runtime is long, sample the opening and closing plus at least two frames per scene and additional frames around every edit. Generate contact sheets for human inspection. Inspect audio separately. Clearly distinguish frame sampling and decode checks from continuous playback.
 
+## Coverage and creative quality gate
+
+For each requirement in the brief, script, or approved treatment, record where it appears in the final video and how it was checked. For long videos, use a simple coverage table: requirement or claim, scene/time range, evidence/source, and review status. Confirm:
+
+- The file opens and decodes from beginning to end; duration, dimensions, frame rate, and streams meet the brief.
+- Every required scene, line of copy, step, claim, and call to action is present. No unapproved factual claim or on-screen copy was introduced during editing.
+- All essential text is readable at intended playback size. Check dense interfaces and small-screen viewing separately; enlarging a contact sheet does not prove source text is legible.
+- The image changes meaningfully when the treatment calls for motion. Confirm motion supports the story, rather than treating movement alone as evidence of quality.
+- The finished look matches the approved visual direction in composition, color, typography, pace, transitions, and sound. Flag generic, repetitive, distracting, or inconsistent sections for revision.
+- The opening makes the subject and viewer promise clear, and the ending resolves the promise and requested next step.
+
+Use automated checks for properties they can establish (decode errors, stream metadata, and, when available, OCR or caption coverage). Use human viewing and listening for meaning, legibility, emotional fit, originality, performance, and sound quality. Save the coverage notes and unresolved findings with the edit record. Do not claim exhaustive review if only samples were watched.
+
 ## Repair and final record
 
 Repair every material issue found and re-export. Review repaired scenes and run the relevant technical checks again. Record the final file name, runtime, dimensions, frame rate, audio format, caption format, review coverage, unresolved limitations, and source/edit manifest location. Do not label a partially reviewed render as fully reviewed.

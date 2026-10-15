@@ -14,6 +14,11 @@
 - Reference videos or visual style:
 - Brand assets, colors, fonts, or music:
 - Topics, claims, or moments to preserve:
+- Visual idea that connects the video:
+- Palette, typography, framing, motion, and transition direction:
+- Sound approach (voice, natural sound, music, effects):
+- Visual references and what to take from them (without copying):
+- Representative frame or sample scene approved:
 
 ## Source material
 - Footage/audio/photos/documents/links:
@@ -37,3 +42,6 @@
 - Factual, legal, or brand review:
 - Audio and visual review coverage:
 - Output location:
+- Coverage checklist mapping each required point to scene/timecode:
+- Technical checks and human playback/listening coverage:
+- Open review findings and disposition:
