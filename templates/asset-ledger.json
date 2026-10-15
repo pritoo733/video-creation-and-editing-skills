@@ -1,0 +1,19 @@
+{
+  "assets": [
+    {
+      "id": "shot-source-01",
+      "local_path": "assets/selected-footage.mp4",
+      "source_url": "https://provider.example/individual-asset-page",
+      "creator": "Record the displayed creator or contributor",
+      "variant": "Record downloaded size and resolution",
+      "license_url": "https://provider.example/applicable-license",
+      "checked_on": "YYYY-MM-DD",
+      "evidence": "rights/saved-asset-page.html",
+      "status": "pending",
+      "intended_use": "Describe the edited use and whether it is commercial",
+      "restrictions_and_attribution": "Record applicable restrictions; do not assume endorsement or raw redistribution rights",
+      "selected_interval": {"in": 0, "out": 3},
+      "story_purpose": "Explain why this shot supports the narration"
+    }
+  ]
+}

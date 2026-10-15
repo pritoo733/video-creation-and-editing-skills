@@ -38,6 +38,10 @@ If the full runtime is long, sample the opening and closing plus at least two fr
 
 ## Coverage and creative quality gate
 
+Review editorial construction separately from readability and decoding. For footage-led work, inspect action within shots, continuity through joins, purposeful shot-scale changes, crop/focal points, source-to-narration relevance, restrained display copy, and sound across cuts. Reject a purported film whose visual progression is primarily text-card replacement or decorative progress bars. For tutorials, animation, diagrams, and photo stories, judge the form against its own purpose; do not force stock footage or constant cuts into it.
+
+Before replacing an earlier cut, compare equivalent passages at the same playback size, with the same narration and duration where practical. Record timestamped improvements and regressions; inspect transition frames before, during, and after joins and normal-speed movement when playback is available. A contact sheet can establish framing, not smooth motion or natural voice performance. Motion diagnostics and footage-duration counts can expose static drift but do not prove professional quality.
+
 For each requirement in the brief, script, or approved treatment, record where it appears in the final video and how it was checked. For long videos, use a simple coverage table: requirement or claim, scene/time range, evidence/source, and review status. Confirm:
 
 - The file opens and decodes from beginning to end; duration, dimensions, frame rate, and streams meet the brief.

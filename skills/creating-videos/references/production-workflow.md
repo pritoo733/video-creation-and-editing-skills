@@ -28,7 +28,7 @@ For app walkthroughs, follow [app-capture.md](app-capture.md). For footage, revi
 
 Build a visual system that fits the tone and platform. Check graphics, subtitles, and logos at intended playback size and safe areas. Do not let overlays obscure faces, essential source text, or key visual evidence.
 
-Before full production, make one representative scene or a small style frame set that demonstrates the chosen visual system, motion, text, and audio treatment. Review it at the actual delivery size and ask for input when the look is a major creative choice. Revise the treatment before scaling asset generation or editing across the whole runtime.
+Before full production, make a rendered representative passage with real source action, narration, graphics, and a typical edit. For a footage-led promo, include two or more adjacent shots so rhythm, transitions, reframing, and sound can be assessed. Style frames may establish the look, but cannot replace this motion pilot. Review at delivery size; refine material findings before scaling. Preserve the user's existing creative choices and authorization.
 
 ## 5. Produce the video and audio
 
@@ -36,7 +36,7 @@ For narration or voiceover, use the user's specified voice or audition available
 
 For presenter-led, talking-head, or lip-synced videos, lock the approved narration before planning final cuts, captions, or generated presenter footage. Check the recorded/generated audio against the approved script using speech recognition when available or careful listening; fix meaningful omissions, additions, names, numbers, and pronunciation before editing. Use actual audio and clip durations as timing evidence. Follow [the presenter and talking-head workflow](presenter-workflow.md) for pilots, continuity, synchronization, and resumable production records.
 
-For Piper, select an exact model (Lessac `en_US-lessac-medium` was used in one project). Check the model and underlying voice dataset license for the intended use. Keep selection configurable and exclude model files from the repo.
+For Piper or another local TTS engine, select an exact model and check both its model terms and underlying dataset terms for the intended use. An earlier voice audition does not establish commercial rights. Keep selection configurable and exclude model files from the repo.
 
 Synthesize in phrase- or scene-sized units when this makes corrections and timing manageable. Keep pronunciation notes in the project. Audition a representative passage before batching the full script. Leave room around speech edits and preserve the final word.
 

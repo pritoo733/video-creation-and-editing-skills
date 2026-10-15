@@ -26,18 +26,22 @@ The workflow emphasizes evidence-backed scripts, motion planned around story bea
 
 See the [worked example](examples/sample-explainer.md) for one brief carried through a script, scene plan, and final review record.
 
+For footage-led promos and social edits, start with the [visual storytelling guide](skills/creating-videos/references/visual-storytelling.md), [stock sourcing and license checks](skills/creating-videos/references/stock-footage.md), and [tool selection guide](skills/creating-videos/references/production-tooling.md). Plan source actions with the [shot list](templates/shot-list.md) and [asset ledger](templates/asset-ledger.json), then review a rendered multi-shot pilot. These workflows support real footage, product captures, original animation, and mixed edits; static slides are a deliberate format choice.
+
+The optional [local shot composer](skills/editing-videos/references/shot-composition.md) uses Python standard library and installed FFmpeg to trim/reframe media, animate overlays, join shots, add captions, and export a final mix. It includes timing/source checks, cache logs, and edit records. `motion_diagnostics.py` helps locate near-static passages for review; it does not score creative quality.
+
+See the [investigation and validated before/after example](examples/footage-promo/validation.md) for the failure analysis, selected stock sources, observed repairs, comparison frames, test results, and review limits.
+
 ## Install in an agent
 
-Copy either skill folder into the skills directory scanned by your LLM agent. Keep each folder's references alongside its `SKILL.md`. For example, on Windows PowerShell:
+From a local clone, install both skills and shared templates into the directory scanned by your LLM agent. The installer also adjusts template references in the installed copies, so they work outside the checkout. For example, on Windows PowerShell:
 
 ```powershell
 $agentSkillsDirectory = 'SET_TO_YOUR_AGENT_SKILLS_DIRECTORY'
-New-Item -ItemType Directory -Force -Path $agentSkillsDirectory | Out-Null
-Copy-Item -Recurse '.\skills\creating-videos' $agentSkillsDirectory
-Copy-Item -Recurse '.\skills\editing-videos' $agentSkillsDirectory
+python scripts/install_skills.py --dest $agentSkillsDirectory
 ```
 
-If your agent has no skill loader, include the desired `SKILL.md` and its linked references in the task context. Use the invocation method supported by your agent, or ask for the video workflow in plain language.
+Inspect local customizations before using `--update`, which overwrites matching repository files while retaining unrelated files. If your agent has no skill loader, include the desired `SKILL.md` and relevant linked references in the task context. Use the invocation method supported by your agent, or ask for the video workflow in plain language. Media tools remain separate dependencies.
 
 ## Start a project
 
@@ -49,7 +53,7 @@ If your agent has no skill loader, include the desired `SKILL.md` and its linked
 
 ## Tooling and rights
 
-The skills support source footage, photos, screen recordings, animation, generated video, voiceover, and mixed-media projects. Local Piper text-to-speech and FFmpeg are one optional workflow; editors and connected generation tools are also options when available. Confirm access, actual capabilities, pricing, and rights before relying on a tool. Never start a paid job, subscription, or trial without the user's explicit approval. Lessac `en_US-lessac-medium` was selected for the example project, but voice choice is configurable. Treat external processing, stock assets, music, and publishing as separate choices that require appropriate authorization.
+The skills support source footage, photos, screen recordings, animation, generated video, voiceover, and mixed-media projects. Local Piper text-to-speech and FFmpeg are one optional workflow; editors and connected generation tools are also options when available. Confirm access, actual capabilities, pricing, and rights before relying on a tool. Never start a paid job, subscription, or trial without the user's explicit approval. Voice choice is configurable; verify the exact model and underlying dataset terms for the intended use. An earlier audition does not establish commercial rights. Treat external processing, stock assets, music, and publishing as separate choices that require appropriate authorization.
 
 ## Repository scope
 

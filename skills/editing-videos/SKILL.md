@@ -7,6 +7,8 @@ description: Use when an existing assembled video or cut needs revisions, recutt
 
 Make changes for the user's creative goal and intended destination, preserve meaningful source context, and deliver a reviewed export with enough edit data for revisions. Read [the review checklist](references/review-checklist.md) for the full quality gate. Read [the local rendering guide](references/local-rendering.md) when using Piper, FFmpeg, or a frame-based local workflow.
 
+For a footage-led timeline with local media, use [shot composition](references/shot-composition.md) for the optional manifest renderer, timed overlays, transitions, caching, and motion diagnostics. Choose real source actions and edit points before styling; a sequence of animated text layouts is insufficient when the brief calls for a film.
+
 ## Edit contract
 
 Before editing, identify the source, current cut, requested changes, audience, destination, creative intent, and protected shots/audio/wording. Keep originals. Record affected ranges and changes in an edit manifest or existing editor timeline.

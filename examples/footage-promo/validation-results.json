@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "duration": 60.0,
+    "streams": [
+      {
+        "type": "video",
+        "codec": "h264",
+        "frames": 1800,
+        "width": 1080,
+        "height": 1920,
+        "frame_rate": "30/1"
+      },
+      {
+        "type": "audio",
+        "codec": "aac",
+        "frames": 2814,
+        "sample_rate": 48000
+      }
+    ]
+  },
+  "full_decode": true,
+  "narration_differences": [],
+  "same_source_mix_as_original": true,
+  "original_layout_scenes": 7,
+  "revised_shots": 19,
+  "revised_stock_sources": 6,
+  "review_method": "2-second full-timeline frame sampling; dense samples around selected joins; central-region motion diagnostic at 2fps; full decode, metadata, final-audio transcription and loudness. Continuous audiovisual playback and subjective listening were not established.",
+  "checked_on": "2026-10-15",
+  "diagnostics": {
+    "original": {
+      "sample_rate": 2,
+      "roi": {
+        "x": 0.1,
+        "y": 0.2,
+        "width": 0.8,
+        "height": 0.6
+      },
+      "sample_pairs": 119,
+      "near_static_fraction": 0.6386554621848739,
+      "mean_abs_luma_change": 2.263387394957983,
+      "interpretation": "Locate passages for review. Movement may be caused by footage, graphics, cuts, noise, or camera moves; it is not a quality score."
+    },
+    "revised": {
+      "sample_rate": 2,
+      "roi": {
+        "x": 0.1,
+        "y": 0.2,
+        "width": 0.8,
+        "height": 0.6
+      },
+      "sample_pairs": 119,
+      "near_static_fraction": 0.025210084033613446,
+      "mean_abs_luma_change": 17.21316050420168,
+      "interpretation": "Locate passages for review. Movement may be caused by footage, graphics, cuts, noise, or camera moves; it is not a quality score."
+    }
+  },
+  "validated_artifact": {
+    "filename": "video-skills-promo-v2.mp4",
+    "bytes": 28565410,
+    "sha256": "8157cc3847f47f9fdce1930e51100301c8fc59a5117729b2f73a923826b2e1fd"
+  }
+}

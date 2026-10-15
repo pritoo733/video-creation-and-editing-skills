@@ -34,6 +34,8 @@ Revise the treatment and sample before applying it to the full video when any an
 
 For videos that promise animation or cinematic motion, check for static-slide drift: each scene should have a meaningful visual event, state change, camera move, or purposeful hold. If motion does not clarify an idea or feeling, remove it. Purposeful stillness is valid when the treatment calls for it.
 
+For footage-led work, apply [visual storytelling](visual-storytelling.md): choose source action, shot scale, continuity, and edit points before designing text overlays. A push into a static card does not substitute for a filmed action. A rendered multi-shot pilot is required to assess movement; still frames only establish composition.
+
 ## Keep variation purposeful
 
 Plan visual changes around meaning: new evidence, a new speaker, a change in time or place, a step in a process, or a shift in emotional beat. Maintain continuity of people, objects, screen state, geography, lighting, and time when the story implies continuity. For generated scenes, track reference images and prompt intent, then inspect identity, anatomy, text, object persistence, flicker, and temporal consistency.

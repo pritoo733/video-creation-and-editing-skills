@@ -13,10 +13,13 @@ Own the full lifecycle: research when needed, concept and script, source and cre
 - Presenter or talking head: [presenter workflow](references/presenter-workflow.md).
 - App or website walkthrough: [app-capture guide](references/app-capture.md).
 - Animation, generated visuals, or a motion-led treatment: [creative modes](references/creative-modes.md) and [visual direction](references/visual-direction.md).
+- Promotional, brand, social, or footage-led work: [visual storytelling](references/visual-storytelling.md) and [stock sourcing](references/stock-footage.md). Choose an execution route with [production tooling](references/production-tooling.md).
 
 Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production. When the user only wants changes to an already assembled video, start with the editing skill instead.
 
 Check the available browser, research, capture, audio, editing, and rendering tools early. Choose a feasible route based on actual access and capability. Continue useful stages if a tool is missing; clearly state the blocker and provide the best available deliverable without claiming that an uncreated video is finished.
+
+For a film-like or footage-led brief, plan shots from actual source media before building layouts. A succession of text cards, screenshot pans, or a moving progress bar does not fulfill that brief. Review a rendered passage containing real action and at least one edit before scaling production. Static frames establish art direction; they do not establish motion or editorial quality. Tutorials and diagrams may hold when viewers need time to understand them.
 
 ## Required production record
 
