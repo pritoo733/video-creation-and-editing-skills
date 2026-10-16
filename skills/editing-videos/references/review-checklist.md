@@ -4,6 +4,7 @@ Review the final rendered export, not just the timeline or draft frames. Keep a 
 
 ## Content and continuity
 
+- Review against the video's audience, purpose, and format. Check whether its opening, structure, pacing, visuals, sound, captions, and ending serve that specific goal; do not apply promotional-montage timing or a short-form hook rule to every video.
 - Check the opening, each chapter transition, every scene change, and the closing. Confirm that visuals support the narration and the sequence is understandable without hidden context.
 - Inspect the first and last frames of every shot. Look for black frames, jumps, stale or mismatched captures, cursor obstruction, cropped controls, clipped graphics, and accidental blank space.
 - For each long spoken sentence or beat, confirm the plan and final film use multiple distinct visuals where the narration supports them. Check the full-frame source as well as overlays; reject repeated background footage behind a sequence of changing screenshots. Inspect adjacent source actions, screenshots, crops, and compositions for duplication, and check that each visual directly illustrates or evidences its beat.

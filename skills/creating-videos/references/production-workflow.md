@@ -2,6 +2,12 @@
 
 Follow the full sequence below when the user asks for a finished video. Adapt the amount of work to the format, but carry each applicable stage through delivery. Ask a focused question only when an unresolved choice materially changes the video; continue other preparation meanwhile.
 
+## Adapt engagement to the video's purpose
+
+Before choosing a hook, structure, pace, or visual style, identify what the intended viewer came to do or feel. Use that goal to define a promise the video can fulfill, then choose the story form that fits. Do not impose a universal hook formula, scene length, voiceover, music bed, or stock-footage treatment on every project. A tutorial may need to show a finished result and then teach stable, readable steps; a documentary may need context and a gradual reveal; an interview may need authentic pauses and complete answers; an explainer may need a visual model; a personal story may need a quiet moment; and a short social clip may need a compact hook, development, and payoff.
+
+For each beat, ask what the viewer needs to know, feel, or see next. Keep, change, or hold the image according to that need. Use motion and variety when they clarify or sustain attention, and use stillness when it lets an important action, statement, or emotion land. The engagement measure is whether the sequence keeps rewarding attention and fulfills its promise, not how many cuts or effects it contains. Use the [format-aware engagement pass](visual-storytelling.md#run-a-format-aware-engagement-pass) before rendering.
+
 ## 1. Define the purpose and feeling
 
 Identify why the video should exist, who it is for, what viewers should feel or understand, and what they may do next. For personal stories, ask what makes the memory meaningful and let real details guide the treatment. For explainers, product, documentary, event, or client work, set the viewer outcome and evidence standard. Determine destination, runtime, orientation, resolution, language, narration, captions, branding, and deliverables. When comprehensive coverage would make one video unwieldy, use chapters or a series rather than silently dropping topics.
@@ -20,7 +26,7 @@ Inspect and organize supplied material: video, audio, photos, scripts, browser c
 
 ## 3. Write and fact-check the script
 
-For audience-led work, connect audience need, title/poster, alternative hooks, first visual, source evidence, and the promised payoff before locking the script. Follow [audience, hooks, and retention](audience-hooks-and-retention.md) for the 21-category library and optional local plan check. A formula is a starting structure; keep the film's actual purpose and the user's tone primary.
+For audience-led work, connect audience need, title/poster when relevant, opening, source evidence, and the promised payoff before locking the script. Follow [audience, hooks, and retention](audience-hooks-and-retention.md) for the 21-category library and optional local plan check. A hook formula is only useful when it suits this audience and format; keep the film's actual purpose and the user's tone primary.
 
 Choose the right structure: a narrative arc, explainer sequence, demonstration, montage, interview, short-form hook/payoff, or another form that serves the brief. Write narration for speaking and separate stage directions from spoken words. For tutorials, explain purpose, sequence, expected state, and limitations. Avoid reading identifiers or sensitive values aloud. Keep each scene focused on one beat. For motion-led work, map each beat to a visible state change using the visual beat sheet; do not settle for a series of unrelated title cards when the brief asks for a performed, animated, or cinematic video.
 
