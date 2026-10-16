@@ -20,6 +20,9 @@ def write_storyboard(plan, shots, output):
         source_title = shot.get('asset_title', 'Original animated graphic')
         source_link = rights.get('source_url', '')
         license_link = rights.get('license_url', '')
+        match = shot.get('metadata_relevance', {})
+        match_summary = (f"Metadata match: {match['score']:.2f}; terms: {', '.join(match.get('matched_terms', []))}. "
+                         'Review the three source frames; score alone does not prove relevance.') if match else ''
         license_name = shot.get('asset_license') or rights.get('license')
         if not license_name and license_link:
             license_name = 'Public domain' if '/publicdomain/' in license_link else 'CC BY' if '/licenses/by/' in license_link else 'Review required'
@@ -29,6 +32,7 @@ def write_storyboard(plan, shots, output):
                           action=shot.get('visual_action', ''), why_it_fits=shot['why_it_fits'],
                           source_title=source_title, source_url=source_link,
                           license=license_name, license_url=license_link,
+                          match_summary=match_summary,
                           preview_path=str(preview_path.resolve()), image_data=image))
     (output/'storyboard.json').write_text(json.dumps(dict(title=plan.get('title', 'Production storyboard'),
         brief=plan['brief'], cards=cards), indent=2), encoding='utf-8')
@@ -39,12 +43,14 @@ def write_storyboard(plan, shots, output):
         license_info = esc(card['license'])
         if card['license_url']:
             license_info += f' · <a href="{esc(card["license_url"])}">license</a>'
+        match_html = f'<p><b>Relevance check:</b> {esc(card["match_summary"])}</p>' if card['match_summary'] else ''
         sections.append(f'''<article class="card">
           <img src="data:image/jpeg;base64,{card['image_data']}" alt="Preview for {esc(card['visual_id'])}">
           <div class="meta"><span>{i:02} · {esc(card['visual_id'])}</span><span>{card['seconds']:.2f}s</span></div>
           <h2>{esc(card['action'])}</h2>
           <p class="script">“{esc(card['narration'])}”</p>
           <p><b>Why this shot:</b> {esc(card['why_it_fits'])}</p>
+          {match_html}
           <p><b>Source:</b> {source}</p><p><b>Rights:</b> {license_info}</p>
         </article>''')
     title = esc(plan.get('title', 'Production storyboard'))

@@ -68,7 +68,7 @@ def search(query, minimum_width=1280, minimum_height=720):
         raise ValueError('A shot-specific search query is required')
     candidates = []
     # Small bounded searches, not a library scrape. Keep metadata batches small.
-    for offset in (0, 8, 16):
+    for offset in (0, 8, 16, 24, 32):
         params = dict(action='query', format='json', generator='search', gsrsearch=query+' filetype:video',
                       gsrnamespace=6, gsrlimit=8, gsroffset=offset, prop='imageinfo',
                       iiprop='url|size|mime|extmetadata', iiextmetadatalanguage='en')
@@ -81,18 +81,49 @@ def search(query, minimum_width=1280, minimum_height=720):
             asset = normalize(page)
             if asset and asset['width'] >= minimum_width and asset['height'] >= minimum_height and asset['size'] <= 350_000_000:
                 candidates.append(asset)
-        if len(candidates) >= 4 or 'continue' not in data:
+        if len(candidates) >= 20 or 'continue' not in data:
             break
     return candidates
 
 
 def rank(candidates, query, duration, used):
-    words = set(re.findall(r'[a-z]{3,}', query.lower()))
+    generic = {'the','and','for','from','with','into','onto','near','while','when','where','this','that','their','there','about',
+               'video','footage','clip','shot','visual','broll','stock','cinematic','professional','beautiful','high','quality',
+               'wide','close','up','slow','motion','camera','angle','scene','show','shows','showing'}
+    def terms(text):
+        result=set()
+        for token in re.findall(r'[a-z]{3,}',text.lower()):
+            if token.endswith('ies') and len(token)>4:
+                token=token[:-3]+'y'
+            elif token.endswith('ing') and len(token)>5:
+                token=token[:-3]
+            elif token.endswith('ed') and len(token)>4:
+                token=token[:-2]
+            elif token.endswith('s') and not token.endswith('ss') and len(token)>4:
+                token=token[:-1]
+            if token not in generic:
+                result.add(token)
+        return result
+    words = terms(query)
     def score(asset):
-        terms = set(re.findall(r'[a-z]{3,}', (asset['title']+' '+asset['description']).lower()))
-        return len(words & terms)*10 + min(asset['width'], 3840)/3840
+        title_terms=terms(asset['title'])
+        description_terms=terms(asset['description'])
+        title_matches=words & title_terms
+        description_matches=words & description_terms
+        matched=title_matches|description_matches
+        coverage=len(matched)/len(words) if words else 0
+        relevance=(len(title_matches)+.55*len(description_matches-title_matches))/len(words) if words else 0
+        query_phrase=' '.join(re.findall(r'[a-z]{3,}',query.lower()))
+        metadata=' '.join((asset['title']+' '+asset['description']).lower())
+        phrase_bonus=.12 if query_phrase and query_phrase in metadata else 0
+        relevance=min(1, relevance+phrase_bonus)
+        return relevance,coverage,sorted(matched)
     eligible = [a for a in candidates if a['id'] not in used and a['duration'] >= duration+.2]
-    return sorted(eligible, key=score, reverse=True)
+    scored=[]
+    for asset in eligible:
+        relevance,coverage,matched=score(asset)
+        scored.append(dict(asset,relevance_score=round(relevance,3),query_coverage=round(coverage,3),matched_terms=matched))
+    return sorted(scored,key=lambda asset:(asset['relevance_score'],asset['query_coverage'],min(asset['width'],3840)),reverse=True)
 
 
 def download(asset, directory):

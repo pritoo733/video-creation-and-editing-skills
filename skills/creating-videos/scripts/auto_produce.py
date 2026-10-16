@@ -334,6 +334,25 @@ def preview(ffmpeg,path,t,width=480):
     return Image.open(io.BytesIO(raw)).convert('RGB')
 
 
+def preview_strip(ffmpeg,path,source_in,duration,output_path):
+    """Build a 16:9 start/middle/end contact sheet for source-action review."""
+    from PIL import Image, ImageDraw
+    times=[source_in+max(.02,(duration-.05)*fraction) for fraction in (.1,.5,.9)]
+    frames=[preview(ffmpeg,path,t,width=480) for t in times]
+    sheet=Image.new('RGB',(960,540),'#12212c'); draw=ImageDraw.Draw(sheet)
+    for index,(frame,label) in enumerate(zip(frames,('START','MIDDLE','END'))):
+        x=(index%2)*480; y=(index//2)*270
+        sheet.paste(frame,(x,y))
+        draw.rectangle((x,y+245,x+480,y+270),fill='#0b1720')
+        draw.text((x+12,y+251),f'{label}  ·  {times[index]:.2f}s',fill='#f1f6f8')
+    draw.rectangle((480,270,960,540),fill='#203744')
+    draw.text((505,300),'SOURCE ACTION CHECK',fill='#91e2d2')
+    draw.text((505,340),'Compare all three moments with',fill='#f1f6f8')
+    draw.text((505,370),'the spoken line before final render.',fill='#f1f6f8')
+    sheet.save(output_path,quality=88)
+    return frames[1]
+
+
 def ambient_bed(path,duration):
     # Original, intentionally quiet harmonic texture. Opt-in; not downloaded music.
     import array
@@ -456,8 +475,12 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
                 print('SEARCH: '+visual['query'],flush=True)
                 candidates=rank(search(visual['query'],plan.get('minimum_source_width',1280),plan.get('minimum_source_height',720)),visual['query'],shot_duration,used)
                 selected=None
-                for candidate in candidates[:3]:
+                for candidate in candidates[:8]:
                     record={k:v for k,v in candidate.items() if k!='evidence'}
+                    if len(candidate.get('matched_terms',[]))<2 or candidate.get('relevance_score',0)<.35:
+                        record.update(selection='rejected',reason='Candidate metadata did not match at least two specific query terms strongly enough')
+                        candidate_log.append(record)
+                        continue
                     try:
                         asset=download(candidate,work/'media')
                         source_in=visual.get('source_in')
@@ -465,9 +488,8 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
                             source_in=source_interval(asset['local_path'],shot_duration)
                         if not isinstance(source_in,(int,float)) or not math.isfinite(source_in) or source_in<0 or source_in+shot_duration>asset['duration']:
                             raise ValueError('The selected source interval exceeds the clip')
-                        image=preview(ffmpeg,asset['local_path'],source_in+shot_duration/2)
                         preview_path=work/'media'/(asset['id']+'-preview.jpg')
-                        image.save(preview_path,quality=90)
+                        image=preview_strip(ffmpeg,asset['local_path'],source_in,shot_duration,preview_path)
                         fingerprint=imagehash.phash(image)
                         if any(fingerprint-previous<=4 for previous in hashes):
                             raise ValueError('Near-duplicate visual already selected')
@@ -483,7 +505,8 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
                             evidence=selected['evidence_path'],status='metadata-checked',verification_method='commons-api-license-allowlist-v1',
                             intended_use='Edited illustrative context; not a product feature, endorsement, or customer result')
                 shot=dict(common,path=selected['local_path'],type='video',kind='stock',source_id='commons:'+selected['id'],rights=rights,
-                          preview_path=str(preview_path),asset_title=selected['title'],asset_license=selected['license'],**{'in':source_in})
+                          preview_path=str(preview_path),asset_title=selected['title'],asset_license=selected['license'],
+                          metadata_relevance=dict(score=selected['relevance_score'],coverage=selected['query_coverage'],matched_terms=selected['matched_terms']),**{'in':source_in})
             else:
                 path=work/(sid+'.mp4')
                 render_graphic(visual,shot_duration,w,h,fps,path,ffmpeg,plan.get('palette'))
