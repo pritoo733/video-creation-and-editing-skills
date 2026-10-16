@@ -2,6 +2,8 @@
 
 Use this route when the user has an idea, topic, or brief but no footage, and has asked for a workflow with no paid services. The agent still does the creative work: research, concept, script, shot plan, source queries, and visual review. The local runner assembles that plan. It does not make every creative decision well by itself, and no workflow can promise “best” results for every topic.
 
+For a brief asking for polished, custom motion graphics, start with [motion-design production](motion-design-production.md) instead. It provides an original editable HTML study and a local frame renderer for connected animation. This montage/diagram runner remains useful when its available source footage and four graphic forms suit the story; a free-only budget does not require choosing those simpler layouts.
+
 ## What this route can make
 
 - Search Wikimedia Commons for relevant video clips through its public API without an API key. Automatically select only files whose metadata matches a conservative public-domain or CC BY allowlist, retain the source and license evidence, and create attribution credits. NC, ND, SA, unknown terms, missing attribution, and stated extra restrictions are excluded.

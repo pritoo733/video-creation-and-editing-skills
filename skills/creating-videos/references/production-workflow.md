@@ -10,6 +10,8 @@ Choose a format that fits the story and viewing context. Estimate narration at a
 
 Before scripting or generating many assets, write a short visual direction that names the intended look, palette, typography, framing, motion, transitions, and sound approach. Explain why those choices fit this audience and subject. Review a representative frame or short scene at final playback size; refine the direction before producing the rest if it feels generic, hard to read, or mismatched. See [visual direction](visual-direction.md).
 
+When the brief asks for custom motion design, a launch film, or an animated visual explainer, follow [motion-design production](motion-design-production.md) to author connected scene changes and render a pilot. No supplied footage is required for a concept that works as original animation. Choose the production route from the desired film, rather than defaulting every idea-only request to stock montage or simple diagram layouts.
+
 ## 2. Research and verify
 
 Research when the video's subject, factual claims, or current details require it. Turn the brief into research questions, search appropriate sources, and prefer primary or authoritative sources. Browse when details are recent, unstable, specialized, or explicitly requested. Record source title, URL, access date, and the claim each source supports in the research ledger. Verify quotations, names, dates, numbers, and product behavior against the source.

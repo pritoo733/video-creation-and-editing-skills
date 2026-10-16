@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Connected motion — original editable study</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #ece8df; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #transport { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; align-items: center; background: #151719; color: #fff; padding: 10px 18px; border-radius: 28px; font: 13px system-ui; }
+  button { cursor: pointer; border: 0; border-radius: 16px; padding: 6px 12px; }
+  input { width: 180px; }
+</style>
+<canvas aria-label="A seed becomes a connected path, a composed picture, and a finished mark"></canvas>
+<div id="transport"><button id="play">Play</button><input id="time" aria-label="Timeline" type="range" min="0" max="11.999" step="0.001" value="0"><span id="stamp">0.0s</span></div>
+<script>
+'use strict';
+// Original artwork and timing. No external fonts, assets, libraries or model calls.
+// This demonstrates techniques, not a product UI or a universal style preset.
+const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d');
+const transport = document.querySelector('#transport');
+if (window.__MOTION_CAPTURE__) transport.style.display = 'none';
+const design = Object.assign({ paper: '#ece8df', ink: '#182122', accent: '#c5482b', label: 'FORM / FEEL / PURPOSE',
+  lines: [['A CLEAR', 'IDEA.'], ['GIVE IT', 'DIRECTION.'], ['SHAPE THE', 'STORY.'], ['MAKE IT', 'MATTER.']] }, window.MOTION_CONFIG || {});
+window.MOTION_META = { width: 1920, height: 1080, fps: 30, duration: 12,
+  reviewTimes: [0, 1.5, 2.4, 2.7, 2.9666666667, 3, 3.0333333333, 4.5, 5.4, 5.7, 5.9666666667, 6, 6.0333333333, 7.5, 8.4, 8.7, 8.9666666667, 9, 9.0333333333, 10.5, 11.5],
+  events: [
+    { frame: 0, action: 'The idea is already visible', sound: 'optional quiet opening tone' },
+    { frame: 90, action: 'The seed becomes a route', sound: 'optional soft connection click' },
+    { frame: 180, action: 'The route unfolds into a picture', sound: 'optional paper movement' },
+    { frame: 270, action: 'The picture resolves into a mark', sound: 'optional restrained landing' }
+  ] };
+const clamp = v => Math.min(1, Math.max(0, v));
+const ease = v => { v = clamp(v); return v * v * v * (v * (v * 6 - 15) + 10); };
+const mix = (a, b, u) => a + (b - a) * u;
+function withAlpha(alpha, draw) { ctx.save(); ctx.globalAlpha = clamp(alpha); draw(); ctx.restore(); }
+function line(points, color, width = 2, close = false) {
+  ctx.beginPath(); points.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+  if (close) ctx.closePath(); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
+}
+function circle(x, y, radius, color, stroke = false, width = 2) {
+  if (radius <= 0) return;
+  ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx[stroke ? 'strokeStyle' : 'fillStyle'] = color; ctx.lineWidth = width; stroke ? ctx.stroke() : ctx.fill();
+}
+function label(text, x, y, size = 18, color = design.ink, align = 'left', weight = 600) {
+  ctx.font = `${weight} ${size}px system-ui, sans-serif`; ctx.textAlign = align; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = color; ctx.fillText(text, x, y);
+}
+function roundRect(x, y, w, h, radius, fill, stroke) {
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, radius);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); }
+}
+function arc(x, y, r, from, to, color, width = 2) {
+  if (to <= from) return; ctx.beginPath(); ctx.arc(x, y, r, from, to); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
+}
+function pathPoint(u, scene, local = 0) {
+  const angle = u * Math.PI * 2 - Math.PI / 2;
+  if (scene === 0) { const r = 158 + 42 * Math.cos(angle * 5) * (1 - .55 * ease(local / 2)); return [Math.cos(angle) * r, Math.sin(angle) * r]; }
+  if (scene === 1) return [Math.sign(Math.cos(angle)) * Math.pow(Math.abs(Math.cos(angle)), .38) * 245, Math.sign(Math.sin(angle)) * Math.pow(Math.abs(Math.sin(angle)), .38) * 143];
+  if (scene === 2) return [Math.sign(Math.cos(angle)) * Math.pow(Math.abs(Math.cos(angle)), .25) * 250, Math.sign(Math.sin(angle)) * Math.pow(Math.abs(Math.sin(angle)), .25) * 194];
+  return [Math.cos(angle) * 177, Math.sin(angle) * 177];
+}
+function hero(scene, amount, x, y, maxWidth, size) {
+  const lines = design.lines[scene];
+  lines.forEach((text, i) => {
+    ctx.save(); ctx.beginPath(); ctx.rect(x - 4, y + i * size * 1.06 - size, maxWidth + 8, size * 1.04); ctx.clip();
+    const p = ease((amount - i * .06) / .62);
+    let fontSize = size;
+    ctx.font = `850 ${fontSize}px system-ui, sans-serif`;
+    while (ctx.measureText(text).width > maxWidth && fontSize > 24) { fontSize--; ctx.font = `850 ${fontSize}px system-ui, sans-serif`; }
+    label(text, x, y + i * size * 1.06 + (1 - p) * size * 1.5, fontSize, i ? design.accent : design.ink, 'left', 850);
+    ctx.restore();
+  });
+}
+function seed(t) {
+  // Small ideas gather around the same central object, then settle into it.
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4 + .13 * Math.sin(t * .7), p = ease((t - .45 - i * .04) / 1.5);
+    const r = mix(290, 215, p); const x = Math.cos(a) * r, y = Math.sin(a) * r;
+    line([[Math.cos(a) * 218, Math.sin(a) * 218], [x, y]], design.ink, 1);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(a + t * .08); ctx.fillStyle = i % 2 ? design.accent : design.ink; ctx.fillRect(-5, -5, 10, 10); ctx.restore();
+  }
+  for (let i = 0; i < 3; i++) arc(0, 0, 231 + i * 14, -.8 + i * .15, -.1 + t * .16 + i * .15, design.ink, 1);
+  label('01  /  A SINGLE SEED', 0, 340, 20, design.ink, 'center');
+}
+function route(t) {
+  // Information travels along an actual route rather than moving a whole card.
+  const p = ease((t - .12) / 1.2);
+  const points = [[-198, 68], [-72, 68], [-72, -54], [95, -54], [95, 66], [197, 66]];
+  line(points, '#c3beb4', 2);
+  const length = (points.length - 1) * p;
+  const partial = points.slice(0, Math.floor(length) + 1);
+  if (length < points.length - 1) { const i = Math.floor(length), q = length - i; partial.push([mix(points[i][0], points[i + 1][0], q), mix(points[i][1], points[i + 1][1], q)]); }
+  line(partial, design.accent, 6);
+  for (const [i, [x, y]] of [[0, [-198, 68]], [1, [-72, -54]], [2, [197, 66]]]) {
+    circle(x, y, 13, design.paper); circle(x, y, 7, i / 3 < p ? design.accent : design.ink);
+  }
+  label('INTENT', -170, 109, 20, design.ink, 'center'); label('ACTION', -72, -86, 20, design.ink, 'center'); label('RESULT', 170, 109, 20, design.ink, 'center');
+  const q = clamp((t - 1.35) / .95), i = Math.min(4, Math.floor(q * 5)), f = q * 5 - i;
+  if (q > 0 && q < 1) circle(mix(points[i][0], points[i + 1][0], f), mix(points[i][1], points[i + 1][1], f), 12, design.ink);
+  line([[-209, -200], [80, -200]], design.ink, 1); label('FOLLOW THE IDEA', -209, -221, 19);
+  label('02  /  A CONNECTED PATH', 0, 340, 20, design.ink, 'center');
+}
+function picture(t) {
+  // A local, original illustration constructs itself inside the carried outline.
+  const reveal = ease(t / 1.15);
+  ctx.save(); ctx.beginPath(); ctx.roundRect(-230, -175, 460, 350, 24); ctx.clip();
+  ctx.fillStyle = '#e2d7c2'; ctx.fillRect(-230, -175, 460, 350);
+  circle(mix(-310, 92, reveal), -72, 67, design.accent);
+  ctx.fillStyle = '#527267'; ctx.beginPath(); ctx.moveTo(-260, 220);
+  for (let x = -260; x <= 260; x += 5) ctx.lineTo(x, 74 + Math.sin(x / 118 + .14 * t) * 66 + (1 - reveal) * 210);
+  ctx.lineTo(260, 220); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#244e46'; ctx.beginPath(); ctx.moveTo(-260, 220);
+  for (let x = -260; x <= 260; x += 5) ctx.lineTo(x, 136 + Math.sin(x / 108 - .1 * t) * 40 + (1 - reveal) * 160);
+  ctx.lineTo(260, 220); ctx.closePath(); ctx.fill(); ctx.restore();
+  const p = ease((t - .8) / .9);
+  for (let i = 0; i < 3; i++) line([[-280 - i * 14, -137 + i * 8], [-280 - i * 14, 180 + i * 8], [175, 180 + i * 8]], design.ink, p);
+  label('03  /  FORM WITH PURPOSE', 0, 340, 20, design.ink, 'center');
+}
+function mark(t) {
+  const p = ease(t / 1.4);
+  for (let i = 0; i < 4; i++) {
+    const r = 202 + i * 21;
+    arc(0, 0, r, -.9 + i * .25, -.9 + i * .25 + p * 4.8, i === 0 ? design.accent : design.ink, i === 0 ? 4 : 1);
+  }
+  const q = ease((t - .5) / .9);
+  ctx.save(); ctx.beginPath(); ctx.rect(-110, -95, 220 * q, 190); ctx.clip();
+  line([[-91, 2], [-26, 67], [99, -70]], design.ink, 20); ctx.restore();
+  label('04  /  ONE COHERENT STORY', 0, 340, 20, design.ink, 'center');
+}
+const scenes = [seed, route, picture, mark];
+window.renderFrame = function(seconds, viewport = {}) {
+  const wide = (viewport.width || innerWidth) / (viewport.height || innerHeight) > 1.2;
+  const W = wide ? 1920 : 1080, H = wide ? 1080 : 1920;
+  const width = viewport.width || innerWidth, height = viewport.height || innerHeight;
+  if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+  ctx.setTransform(width / W, 0, 0, height / H, 0, 0); ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = design.paper; ctx.fillRect(0, 0, W, H);
+  const time = Math.min(11.999999, Math.max(0, seconds)), scene = Math.floor(time / 3), local = time % 3;
+  const next = Math.min(scene + 1, 3), handoff = scene < 3 ? ease((local - 2.4) / .6) : 0;
+  const mx = wide ? 96 : 74, titleY = wide ? 432 : 415;
+  label('CONNECTED MOTION', mx, wide ? 100 : 165, 21, design.ink, 'left', 750);
+  label(design.label, wide ? W - mx : mx, wide ? 100 : 213, wide ? 17 : 16, design.ink, wide ? 'right' : 'left');
+  line([[mx, wide ? 142 : 260], [W - mx, wide ? 142 : 260]], '#c3beb4', 1);
+  const titleSize = wide ? 112 : 116, titleWidth = wide ? 900 : 930;
+  if (handoff < 1) withAlpha(1 - handoff, () => hero(scene, scene === 0 ? 1 : local + .05, mx, titleY - handoff * 30, titleWidth, titleSize));
+  // New text starts after the boundary; both layouts never overlap during a handoff.
+  label('An original study in visual continuity.', mx, wide ? 695 : 685, wide ? 25 : 27, design.ink, 'left', 400);
+  label('Code-drawn artwork. No stock or generated footage.', mx, wide ? 736 : 730, wide ? 17 : 19, '#5c6561', 'left', 400);
+  const cx = wide ? 1410 : 540, cy = wide ? 526 : 1185, scale = wide ? 1 : 1.3;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(scale, scale);
+  // A single shared contour persists across all four scenes and their boundaries.
+  const points = Array.from({ length: 180 }, (_, i) => {
+    const a = pathPoint(i / 180, scene, local), b = pathPoint(i / 180, next, 0);
+    return [mix(a[0], b[0], handoff), mix(a[1], b[1], handoff)];
+  });
+  withAlpha(1 - handoff, () => scenes[scene](local));
+  if (handoff > .8) withAlpha((handoff - .8) / .2, () => scenes[next](0));
+  line(points, design.ink, 4, true);
+  // A registration point stays in the same location through the entire sequence.
+  circle(0, -330, 5, design.accent); line([[-14, -330], [14, -330]], design.ink, 1);
+  ctx.restore();
+  const footer = wide ? H - 95 : H - 230;
+  line([[mx, footer - 28], [W - mx, footer - 28]], '#c3beb4', 1);
+  for (let i = 0; i < 4; i++) {
+    const x = mx + i * (wide ? 220 : 205), active = clamp((time - i * 3) / 3);
+    label(`0${i + 1}`, x, footer + 8, 18, i === scene ? design.accent : design.ink);
+    ctx.fillStyle = '#d1cbc0'; ctx.fillRect(x + 42, footer - 5, 108, 3); ctx.fillStyle = design.accent; ctx.fillRect(x + 42, footer - 5, 108 * active, 3);
+  }
+};
+window.motionReady = document.fonts.ready;
+let playing = false, started = 0, position = 0;
+const slider = document.querySelector('#time'), play = document.querySelector('#play');
+function tick(now) {
+  if (!playing) return;
+  position = ((now - started) / 1000) % 12; slider.value = position;
+  window.renderFrame(position); document.querySelector('#stamp').textContent = `${position.toFixed(1)}s`; requestAnimationFrame(tick);
+}
+play.onclick = () => { playing = !playing; play.textContent = playing ? 'Pause' : 'Play'; if (playing) { started = performance.now() - position * 1000; requestAnimationFrame(tick); } };
+slider.oninput = () => { playing = false; play.textContent = 'Play'; position = +slider.value; window.renderFrame(position); document.querySelector('#stamp').textContent = `${position.toFixed(1)}s`; };
+addEventListener('resize', () => window.renderFrame(position));
+window.renderFrame(0);
+</script>
+</html>

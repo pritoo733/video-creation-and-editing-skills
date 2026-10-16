@@ -11,8 +11,13 @@ class InstallationChecks(unittest.TestCase):
             installer.install(ROOT,dest)
             self.assertTrue((dest/'creating-videos/assets/templates/shot-list.md').is_file())
             self.assertTrue((dest/'editing-videos/scripts/compose_video.py').is_file())
+            self.assertTrue((dest/'creating-videos/scripts/render_motion.cjs').is_file())
+            self.assertTrue((dest/'creating-videos/assets/motion-starter/index.html').is_file())
             ref=dest/'creating-videos/references/production-workflow.md'
             self.assertTrue((ref.parent/'../assets/templates/coverage-matrix.md').resolve().is_file())
+            motion_ref=dest/'creating-videos/references/motion-design-production.md'
+            self.assertIn('../assets/templates/visual-beat-sheet.md',motion_ref.read_text(encoding='utf-8'))
+            self.assertTrue((motion_ref.parent/'../assets/motion-starter/index.html').resolve().is_file())
             with self.assertRaisesRegex(ValueError,'already exists'):installer.install(ROOT,dest)
             installer.install(ROOT,dest,update=True)
 

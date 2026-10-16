@@ -40,6 +40,10 @@ For frame-accurate, graphics-led or hybrid video scenes, see the optional [Hyper
 
 For richer custom HTML, SVG, or React motion design, see the optional [Motion library video workflow](skills/creating-videos/references/motion-library-workflow.md). The automatic Python renderer now makes original animated process, chart, cycle, and comparison graphics locally; Motion remains an optional animation layer for projects using a frame-seekable renderer.
 
+For **custom motion-design films**, use [motion-design production](skills/creating-videos/references/motion-design-production.md). It adds story-led object transformations, masked type, connected scene handoffs, frame-aligned sound planning, and a local HTML/Canvas renderer. The [original editable study](skills/creating-videos/assets/motion-starter/index.html) demonstrates these techniques in landscape and portrait without external media or animation packages. The renderer requires free Playwright/Chromium and FFmpeg, exports silent visuals for finishing with the editing workflow, saves scene/transition snapshots, blocks remote asset requests, and checks reverse-seek consistency. This route is available to any LLM with local tool access; it is not tied to the model named by a showcase. Its visual treatment should be newly designed for each project.
+
+See the [motion-design validation record](examples/motion-design/validation.md) for the actual pilot render, portrait checks, integration tests, and review limits.
+
 ### Create a video with no supplied footage and no paid services
 
 The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original animated graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
