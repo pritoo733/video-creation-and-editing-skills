@@ -8,16 +8,22 @@ import sys
 
 
 def doctor(config):
-    for name in ('PIL','imageio_ffmpeg','piper','scenedetect','cv2','opentimelineio','imagehash','faster_whisper'):
+    modules=['PIL','imageio_ffmpeg','scenedetect','cv2','opentimelineio','imagehash','faster_whisper']
+    if config.get('tts_engine','piper')=='piper': modules.append('piper')
+    elif config.get('tts_engine')=='pocket': modules.extend(('pocket_tts','scipy','numpy','torch'))
+    else: raise ValueError('Unsupported tts_engine in runtime config')
+    for name in modules:
         importlib.import_module(name)
-    for path in (config['voice'],config['voice']+'.json',config['voice_card']):
-        if not Path(path).is_file(): raise ValueError('Missing voice asset: '+path)
+    if config.get('tts_engine','piper')=='piper':
+        for path in (config['voice'],config['voice']+'.json',config['voice_card']):
+            if not Path(path).is_file(): raise ValueError('Missing voice asset: '+path)
     result=subprocess.run([config['ffmpeg'],'-hide_banner','-filters'],capture_output=True,text=True,check=True)
     required=('subtitles','volume','amix','zoompan','crop','xfade')
     if not all(name in result.stdout for name in required):
         raise ValueError('FFmpeg lacks a required filter')
     subprocess.run([sys.executable,'-m','pip','check'],check=True)
-    return dict(status='ready',paid_services=[],required_filters=list(required),voice=Path(config['voice']).name)
+    voice=config.get('pocket_voice') if config.get('tts_engine')=='pocket' else Path(config['voice']).name
+    return dict(status='ready',paid_services=[],required_filters=list(required),tts_engine=config.get('tts_engine','piper'),voice=voice)
 
 
 if __name__=='__main__':

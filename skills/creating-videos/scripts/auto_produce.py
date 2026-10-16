@@ -316,18 +316,41 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     (output/'production-log.json').write_text('[]',encoding='utf-8')
     record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[]))
     ffmpeg=runtime['ffmpeg']; model=Path(runtime['voice']).resolve()
-    if not model.is_file() or not Path(str(model)+'.json').is_file():
-        raise ValueError('Run setup_free_tools.py first; a local voice and configuration are required')
+    tts_engine=runtime.get('tts_engine','piper')
+    pocket_model=pocket_voice_state=None
+    if tts_engine=='piper':
+        if not model.is_file() or not Path(str(model)+'.json').is_file():
+            raise ValueError('Run setup_free_tools.py first; a local Piper voice and configuration are required')
+    elif tts_engine=='pocket':
+        try:
+            from pocket_tts import TTSModel
+            from scipy.io import wavfile
+            import numpy as np
+        except ImportError as exc:
+            raise ValueError('Pocket TTS is not installed in this runtime; rerun setup_free_tools.py --tts-engine pocket') from exc
+        print('Loading Pocket TTS model and voice; first run may download weights from Hugging Face.',flush=True)
+        pocket_model=TTSModel.load_model()
+        pocket_voice_state=pocket_model.get_state_for_audio_prompt(runtime.get('pocket_voice','alba'))
+    else:
+        raise ValueError(f'Unsupported local TTS engine: {tts_engine}')
     (output/'plan.json').write_text(json.dumps(plan,indent=2),encoding='utf-8')
     work=output/'working'; work.mkdir(exist_ok=True)
     shots=[]; tracks=[]; rows=[]; assets=[]; used=set(); hashes=[]; cursor=0; candidate_log=[]
     for bi,beat in enumerate(plan['beats']):
         record_stage(output,'narration','running',dict(beat=bi+1,total_beats=len(plan['beats'])))
         print(f'BEAT {bi+1}/{len(plan["beats"])}: local narration',flush=True)
-        key=hashlib.sha256((beat['narration']+str(model.stat().st_mtime_ns)).encode()).hexdigest()[:16]
+        voice_key=(runtime.get('pocket_voice','alba') if tts_engine=='pocket' else str(model.stat().st_mtime_ns))
+        key=hashlib.sha256((beat['narration']+tts_engine+str(voice_key)).encode()).hexdigest()[:16]
         audio=work/(key+'.wav')
         if not audio.exists():
-            run([sys.executable,'-m','piper','--model',model,'--output_file',audio],input=beat['narration'].encode('utf-8'))
+            if tts_engine=='piper':
+                run([sys.executable,'-m','piper','--model',model,'--output_file',audio],input=beat['narration'].encode('utf-8'))
+            else:
+                import torch
+                with torch.inference_mode():
+                    samples=pocket_model.generate_audio(pocket_voice_state,beat['narration']).detach().cpu().numpy()
+                pcm=np.clip(samples,-1,1)
+                wavfile.write(str(audio),pocket_model.sample_rate,(pcm*32767).astype(np.int16))
         spoken=voice_duration(audio); frames=math.ceil((spoken+.35)*fps); duration=frames/fps
         tracks.append(dict(path=str(audio),role='narration',start=cursor,duration=spoken,gain_db=0))
         rows+=captions(beat['narration'],cursor,spoken)
@@ -388,8 +411,12 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     credits=['# Media credits','Include these credits with distribution. Clips were trimmed/reframed and combined with narration/captions.','']
     for asset in assets:
         credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
-    credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.',
-              'Generated process, chart, cycle, and comparison graphics: original procedural output.']
+    if tts_engine=='pocket':
+        credits+=['',f'Voice synthesis: Pocket TTS by Kyutai Labs; model weights licensed CC BY 4.0 ({runtime.get("pocket_model", "https://huggingface.co/kyutai/pocket-tts")}).',
+                  f'Voice preset: {runtime.get("pocket_voice")}; source {runtime.get("pocket_voice_creator")}; {runtime.get("pocket_voice_license")}; {runtime.get("pocket_voice_catalog")}/{runtime.get("pocket_voice_source")}. Check the exact voice terms and include any required attribution before distribution.']
+    else:
+        credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.']
+    credits+=['Generated process, chart, cycle, and comparison graphics: original procedural output.']
     if isinstance(plan.get('music'),dict):
         music=plan['music']; suffix=music_source.suffix.lower() or '.audio'
         local_music=work/('licensed-music'+suffix); shutil.copy2(music_source,local_music)

@@ -9,7 +9,7 @@ For a brief asking for polished, custom motion graphics, start with [motion-desi
 - Search Wikimedia Commons for relevant video clips through its public API without an API key. Automatically select only files whose metadata matches a conservative public-domain or CC BY allowlist, retain the source and license evidence, and create attribution credits. NC, ND, SA, unknown terms, missing attribution, and stated extra restrictions are excluded.
 - Create original moving process diagrams, sourced charts, cycles, and comparisons locally. These are useful when stock footage would be decorative or misleading.
 - The built-in graphic renderer supports four deterministic, scene-timed layouts: process, sourced chart, cycle, and two-sided comparison. For custom HTML/SVG/React motion, use the optional [Motion library workflow](motion-library-workflow.md) with a frame-seekable local renderer; the Motion package is not a dependency of `auto_produce.py`.
-- Synthesize local English narration with Piper and the included LJ Speech voice model. The model card and dataset attribution travel with the runtime. Check the precise model terms before commercial use; do not replace the approved default with a model found online without checking its dataset license.
+- Synthesize local English narration with Pocket TTS on CPU by default, or choose Piper with `--tts-engine piper`. Pocket TTS requires its package and downloads model weights on first use. The model repo is gated: users must review and accept its access terms on Hugging Face (which requests contact-information sharing) and authenticate before weights can download. The model weights are CC BY 4.0; each voice has separate dataset terms, recorded by setup in `runtime.json` and copied into `CREDITS.md`. Select only a voice whose terms fit the distribution; `cosette` and `jean` are noncommercial-only. The `alba` preset is CC BY 4.0 and should be attributed. TTS package and model generation are free; the first package/model download needs internet and disk space.
 - Create exact-script captions, compare them with local Whisper transcription, and use recognized word timestamps when they agree. If speech differs, flag the mismatch and preserve the script captions for review.
 - Mix narration and optional music/effects/ambience tracks. The mixer ducks music under speech and writes an editable track manifest. The example plan does not add a synthetic sine-wave “score”; silence is preferable when no suitable cue exists.
 - Generate an optional original local score with [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5) in a separate environment after confirming the current model/license terms, hardware, and disk needs. This is not part of the lightweight runner or default install; if the model cannot run, use a rights-cleared source cue or no music.
@@ -42,18 +42,20 @@ This route adapts useful production ideas from [OpenMontage](https://github.com/
 From the repository root, Python 3.10 or later is required. Windows PowerShell:
 
 ```powershell
-python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
+python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools --tts-engine pocket --pocket-voice alba
 python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
 ```
+
+Accept the model access conditions at <https://huggingface.co/kyutai/pocket-tts>, then authenticate with `hf auth login` before the first render if the weights are gated for your account. Rendering uses the selected model locally on CPU. Use `--pocket-voice` to choose another supported English preset; check its license in the linked voice catalog before distributing, especially for commercial work. The setup step records the selected voice's source, license, and attribution in `runtime.json`; preserve the generated output's `CREDITS.md`. Use `--tts-engine piper` if you prefer the existing ungated Piper workflow or Pocket model access/resources are unsuitable.
 
 macOS/Linux:
 
 ```sh
-python3 skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
+python3 skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools --tts-engine pocket --pocket-voice alba
 python3 skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
 ```
 
-Setup creates a local virtual environment and fetches the listed open-source packages and the approved voice model from their canonical sources. FFmpeg is supplied by `imageio-ffmpeg`. No API key is needed. Review package and model licenses for the planned use. `doctor_free_tools.py` checks imports, model files, FFmpeg filters, and Python dependency health without making a video.
+Setup creates a local virtual environment and fetches the listed open-source packages; Piper also downloads the approved voice model. FFmpeg is supplied by `imageio-ffmpeg`. Piper requires no account or API key; Pocket TTS model access requires a Hugging Face account, accepting the model terms, and authentication. Review package and model licenses for the planned use. `doctor_free_tools.py` checks imports, required voice files, FFmpeg filters, and Python dependency health without making a video.
 
 ## Create from an idea, not from user footage
 
