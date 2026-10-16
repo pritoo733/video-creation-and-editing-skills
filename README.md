@@ -36,6 +36,8 @@ For website and app videos, follow [interface framing and scrolling](skills/edit
 
 For raw-footage edits, use the [local footage-first workflow](skills/editing-videos/references/raw-footage-workflow.md): inspect and transcribe first, plan a reversible edit decision list, smooth cut boundaries, then review every join. For readable, accurate subtitles use the [caption workflow](skills/editing-videos/references/caption-workflow.md), which includes a local word-level correction stage. For custom animation and sound, use the [motion-graphics guide](skills/creating-videos/references/motion-graphics.md) and [voice and music guide](skills/creating-videos/references/voice-and-music.md); both distinguish permissive project code from the separate terms for model weights, voices, and media.
 
+For frame-accurate, graphics-led or hybrid video scenes, see the optional [HyperFrames local workflow](skills/creating-videos/references/hyperframes-local-workflow.md). It adds an editable HTML animation route with local preview and rendering; the existing footage composer remains the route for source-heavy edits and scrolling interface captures.
+
 ### Create a video with no supplied footage and no paid services
 
 The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original process graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
