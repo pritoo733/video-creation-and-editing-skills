@@ -17,7 +17,7 @@ def write_storyboard(plan, shots, output):
         image = base64.b64encode(preview_path.read_bytes()).decode('ascii')
         beat = beats[shot['beat_id']]
         rights = shot.get('rights', {})
-        source_title = shot.get('asset_title', 'Original animated graphic')
+        source_title = shot.get('asset_title') or ('Google Flow generated clip' if shot.get('kind')=='google_flow' else 'Original animated graphic')
         source_link = rights.get('source_url', '')
         license_link = rights.get('license_url', '')
         match = shot.get('metadata_relevance', {})

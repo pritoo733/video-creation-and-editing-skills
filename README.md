@@ -52,7 +52,17 @@ For reference-assisted visual direction, use the [searchable prompt-library work
 
 ### Create a video with no supplied footage and no paid services
 
-The optional [automatic production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original animated graphics, generates narration and captions, mixes tracks, and exports a cut with an editable manifest. ElevenLabs is the preferred hosted narration option when the user selects it, approves its use, and configures a key locally; Pocket TTS and Piper remain local fallbacks. The fully local route uses no hosted TTS API. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
+The optional [automatic production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, accepts user-exported Google Flow clips, creates original animated graphics, generates narration and captions, mixes tracks, and exports a cut with an editable manifest. Google Flow is a separately operated hosted browser tool; generation is never automatic. Use only the account's currently available daily free credits for the no-paid path, preserve its watermarking, and check its current settings and terms before generating. Follow the [Flow clip workflow](skills/creating-videos/references/google-flow-workflow.md) and [shot-plan template](templates/google-flow-shot-plan.md). ElevenLabs is the preferred hosted narration option when the user selects it, approves its use, and configures a key locally; Pocket TTS and Piper remain local fallbacks. The fully local route does not use Flow or a hosted TTS API. A complete local sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
+
+### View your generated videos in the local dashboard
+
+The read-only **Production Desk** dashboard scans your saved output folders and shows completed videos, in-progress and failed projects, runtime, recorded production milestones, voice details, and footage/Flow/graphics counts. It runs on your computer and does not upload project data. Flow source clips under each project's `assets/` folder are excluded from finished-video totals; their count and provenance manifest are shown separately. From the repository root, point it at the folder containing your generated projects:
+
+```powershell
+python scripts/video_dashboard.py --root "..\outputs" --open
+```
+
+On macOS or Linux, use `python3 scripts/video_dashboard.py --root ../outputs --open`. Replace the path with your own output library. Keep the server bound to its default `127.0.0.1`; stop it with `Ctrl+C`. The dashboard counts non-empty top-level MP4 deliverables, including `final.mp4`, while skipping obvious `visuals`, `pilot`, and working renders. Missing details stay marked unavailable, and creative milestones are based on files and logs that actually exist.
 
 Install the free local runtime once from this repository root:
 
@@ -77,7 +87,7 @@ Then ask your LLM to research a topic and audience, create a varied narration-ma
 .\.video-tools\Scripts\python.exe skills\creating-videos\scripts\auto_produce.py path\to\plan.json --output path\to\project\output --runtime .video-tools\runtime.json
 ```
 
-For a visual checkpoint before the final encode, add `--draft-only`. The workflow writes a portable `storyboard.html` with each shot preview beside its narration, intent, source, and license. Review and revise the plan, then rerun without that flag. This adopts OpenMontage's useful scene-board and staged-production ideas while keeping this route local and free: no paid generation provider, paid stock library, or paid API is used. The full run also records its stages and errors in `production-log.json`.
+For a visual checkpoint before the final encode, add `--draft-only`. The workflow writes a portable `storyboard.html` with each shot preview beside its narration, intent, source, and license. Review and revise the plan, then rerun without that flag. Assembly and rendering remain local. A fully local project uses no hosted video-generation provider; a project with Flow clips uses separately generated hosted media from the user's free daily credits and records that source in `google-flow-assets.json`. The full run also records its stages and errors in `production-log.json`.
 
 Inspect the output contact sheet, clip previews, source/license evidence, full video, captions, and review report. The route can only use suitable public media it can find, and does not clear personality, property, trademark, or factual claims automatically. A completed encode is not a completed creative review. Setup and the initial local speech-recognition model require an internet connection; production runs locally afterward. Package, voice, and footage licenses still apply. No output-quality guarantee can replace editorial review.
 

@@ -18,14 +18,14 @@ No new Python package is required. The server binds to `127.0.0.1` by default an
 
 - Summary cards: completed videos, projects in progress, total project count, and total rendered runtime.
 - A searchable, sortable project list with title, status, updated/created timestamp when available, duration, resolution/orientation, narration provider/voice when recorded, shot count, and footage-versus-graphics counts when available.
-- Production milestones derived only from recorded artifacts/logs: plan, storyboard, narration/audio, captions, final render, and creative review. Unknown values remain “Not recorded”; existence is not treated as evidence of quality.
+- Production milestones derived only from recorded artifacts/logs: plan/shot list, storyboard, narration/audio, captions, final render, and creative review. Unknown values remain “Not recorded”; a report only marks creative review complete when it records an explicit pass/approval.
 - Per-project details with a local video preview when `final.mp4` exists, links to storyboard, credits, captions, and review report when present, plus recorded source/license information.
 - An honest empty state with instructions to start the server against the folder where generated outputs are saved.
 
 ## Discovery and status rules
 
-- A project is discovered from known markers such as `plan.json`, `production-log.json`, `review.json`, `timeline.json`, or `final.mp4` beneath the chosen root.
-- A rendered video is counted as completed only when `final.mp4` exists and is non-empty. A plan or run log without that file is an in-progress/unfinished project; a log status of failed is shown as failed.
+- A project is discovered from `plan.json`, `production-log.json`, `timeline.json`, or a top-level deliverable MP4 beneath the chosen root. Review files enrich a discovered project but do not create a project on their own, which keeps isolated review-only folders out of the library.
+- A rendered video is counted as completed when a non-empty top-level MP4 deliverable exists in the project folder. This includes canonical `final.mp4` and named final exports; obvious `visuals*`, `pilot*`, `*-pilot*`, `original-vs-revised`, and working-folder renders are excluded. Each deliverable is counted as a video, so one project may contain multiple versions. A plan or run log without a deliverable is in progress; a log status of failed is shown as failed.
 - Runtime and dimensions come from existing review/timeline metadata when reliable; if unavailable, the dashboard reports them as unavailable rather than probing with a new dependency.
 - Milestone state is taken from existing artifact files and production-log status entries. This dashboard does not score creative quality, infer ad results, count views, or claim progress that was not recorded.
 - Only recognized output names and metadata are displayed; working intermediates are excluded from completed-video counts.

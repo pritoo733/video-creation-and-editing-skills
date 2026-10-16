@@ -1,4 +1,4 @@
-"""Execute an agent-authored brief/shot plan with no supplied footage or paid API."""
+"""Execute an agent-authored brief/shot plan with local media and no paid API."""
 import argparse
 import difflib
 from datetime import datetime, timezone
@@ -78,8 +78,33 @@ def validate_plan(plan):
             if visual.get('kind')=='stock':
                 if not visual.get('query','').strip():
                     raise ValueError('Stock visuals need a subject/action search query')
+            elif visual.get('kind')=='google_flow':
+                if not isinstance(visual.get('path'),str) or not visual['path'].strip() or Path(visual['path']).is_absolute():
+                    raise ValueError('Google Flow visuals need a project-relative MP4 path')
+                if Path(visual['path']).suffix.lower()!='.mp4':
+                    raise ValueError('Google Flow visuals must reference a downloaded MP4 clip')
+                if not isinstance(visual.get('action'),str) or not visual['action'].strip():
+                    raise ValueError('Google Flow visuals need a concrete visible action')
+                generation=visual.get('generation')
+                required=('prompt','model','aspect_ratio','duration_seconds','credits_used','credit_source','visible_watermark')
+                if not isinstance(generation,dict) or any(not isinstance(generation.get(key),str) or not generation[key].strip()
+                                                           for key in ('prompt','model','aspect_ratio','credit_source','visible_watermark')):
+                    raise ValueError('Google Flow visuals need prompt, model, aspect_ratio, credit_source, and visible_watermark records')
+                if generation.get('credit_source')!='free_daily':
+                    raise ValueError('This no-paid workflow accepts only Google Flow daily free credits')
+                if generation.get('visible_watermark') not in ('present','not_visible','unknown'):
+                    raise ValueError('Google Flow visible_watermark must be present, not_visible, or unknown')
+                seconds=generation.get('duration_seconds')
+                credits=generation.get('credits_used')
+                if isinstance(seconds,bool) or not isinstance(seconds,(int,float)) or not math.isfinite(seconds) or not 0<seconds<=60:
+                    raise ValueError('Google Flow duration_seconds must be between 0 and 60')
+                if isinstance(credits,bool) or not isinstance(credits,int) or credits<0:
+                    raise ValueError('Google Flow credits_used must be a non-negative integer')
+                metadata_file=generation.get('metadata_file')
+                if metadata_file is not None and (not isinstance(metadata_file,str) or not metadata_file.strip() or Path(metadata_file).is_absolute()):
+                    raise ValueError('Google Flow metadata_file must be a project-relative path when provided')
             elif visual.get('kind') not in ('process','chart','cycle','comparison'):
-                raise ValueError('Use stock, process, chart, cycle, or comparison; no paid generator or silent slide fallback')
+                raise ValueError('Use stock, google_flow with daily free credits, process, chart, cycle, or comparison; no paid generator or silent slide fallback')
             elif visual.get('kind')=='comparison':
                 labels=visual.get('labels',[]); details=visual.get('details',[])
                 if not isinstance(labels,list) or len(labels)!=2 or not isinstance(details,list) or len(details)!=2 or any(not isinstance(value,str) or not value.strip() for value in details):
@@ -88,6 +113,77 @@ def validate_plan(plan):
             if hold_reason is not None and (not isinstance(hold_reason,str) or len(hold_reason.strip())<20):
                 raise ValueError('A short-form hold_reason must explain what viewers need time to read or understand')
     return w,h,fps
+
+
+def _sha256_file(path):
+    digest=hashlib.sha256()
+    with Path(path).open('rb') as source:
+        for block in iter(lambda: source.read(1024*1024),b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def prepare_google_flow_assets(plan, project_root, output):
+    """Copy user-exported Flow clips into the output project and record provenance."""
+    project_root=Path(project_root).resolve()
+    output=Path(output).resolve()
+    media_dir=output/'assets'/'google-flow'
+    by_position={}; records=[]; seen_hashes=set()
+    for bi,beat in enumerate(plan['beats']):
+        for vi,visual in enumerate(beat['visuals']):
+            if visual.get('kind')!='google_flow':
+                continue
+            relative=Path(visual['path'])
+            source=(project_root/relative).resolve()
+            try:
+                source.relative_to(project_root)
+            except ValueError:
+                raise ValueError('Google Flow clip paths must stay inside the project folder') from None
+            if not source.is_file() or source.stat().st_size==0:
+                raise ValueError(f'Google Flow clip does not exist or is empty: {visual["path"]}')
+            digest=_sha256_file(source)
+            if digest in seen_hashes:
+                raise ValueError('Use a distinct Google Flow clip for each planned shot; repeated source clips are not allowed')
+            seen_hashes.add(digest)
+            media_dir.mkdir(parents=True,exist_ok=True)
+            try:
+                source.relative_to(media_dir.resolve())
+                destination=source
+            except ValueError:
+                safe_name=re.sub(r'[^A-Za-z0-9._-]+','-',source.stem).strip('-._')[:64] or 'clip'
+                destination=media_dir/f'{digest[:12]}-{safe_name}.mp4'
+                if not destination.exists() or source!=destination.resolve():
+                    shutil.copy2(source,destination)
+            output_relative=destination.relative_to(output).as_posix()
+            generation=visual['generation']
+            original_path=visual['path']
+            metadata_output=None
+            metadata_source=generation.get('metadata_file')
+            if metadata_source:
+                metadata_path=(project_root/metadata_source).resolve()
+                try:
+                    metadata_path.relative_to(project_root)
+                except ValueError:
+                    raise ValueError('Google Flow metadata paths must stay inside the project folder') from None
+                if not metadata_path.is_file():
+                    raise ValueError(f'Google Flow metadata file does not exist: {metadata_source}')
+                metadata_destination=destination.with_name(destination.stem+'_metadata.json')
+                if metadata_path!=metadata_destination.resolve():
+                    shutil.copy2(metadata_path,metadata_destination)
+                metadata_output=metadata_destination.relative_to(output).as_posix()
+                generation['metadata_file']=metadata_output
+            visual['source_file']=original_path
+            visual['path']=output_relative
+            record=dict(source_file=original_path,output_file=output_relative,sha256=digest,
+                        prompt=generation['prompt'],model=generation['model'],aspect_ratio=generation['aspect_ratio'],
+                        generation_duration_seconds=generation['duration_seconds'],credits_used=generation['credits_used'],
+                        credit_source=generation['credit_source'],visible_watermark=generation['visible_watermark'],
+                        metadata_file=metadata_output,action=visual['action'],why_it_fits=visual['why_it_fits'])
+            records.append(record)
+            by_position[(bi,vi)]=destination
+    if records:
+        (output/'google-flow-assets.json').write_text(json.dumps({'provider':'Google Flow','clips':records},indent=2),encoding='utf-8')
+    return by_position,records
 
 
 def run(command, **kwargs):
@@ -391,6 +487,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
     from motion_graphics import render as render_graphic
     w,h,fps=validate_plan(plan); output=Path(output).resolve(); output.mkdir(parents=True,exist_ok=True)
     project_root=Path(project_root or output).resolve()
+    flow_asset_by_position,flow_asset_records=prepare_google_flow_assets(plan,project_root,output)
     music_source=None
     if isinstance(plan.get('music'),dict):
         music_source=(project_root/plan['music']['path']).resolve()
@@ -412,7 +509,11 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
         print(f'Using ElevenLabs TTS with voice {voice_id}; the API key is not logged.',flush=True)
     (output/'production-log.json').write_text('[]',encoding='utf-8')
     external_services=['ElevenLabs Text to Speech API'] if tts_engine=='elevenlabs' else []
-    record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[],external_services=external_services))
+    if flow_asset_records:
+        external_services.append('Google Flow (user-generated clips imported locally)')
+    flow_credits=sum(item['credits_used'] for item in flow_asset_records)
+    record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[],external_services=external_services,
+        google_flow_clips=len(flow_asset_records),google_flow_credits_recorded=flow_credits))
     pocket_model=pocket_voice_state=None
     if tts_engine=='piper':
         if not model.is_file() or not Path(str(model)+'.json').is_file():
@@ -507,6 +608,39 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
                 shot=dict(common,path=selected['local_path'],type='video',kind='stock',source_id='commons:'+selected['id'],rights=rights,
                           preview_path=str(preview_path),asset_title=selected['title'],asset_license=selected['license'],
                           metadata_relevance=dict(score=selected['relevance_score'],coverage=selected['query_coverage'],matched_terms=selected['matched_terms']),**{'in':source_in})
+            elif visual['kind']=='google_flow':
+                source=flow_asset_by_position[(bi,vi)]
+                source_in=visual.get('source_in')
+                if source_in is None:
+                    source_in=source_interval(source,shot_duration)
+                if isinstance(source_in,bool) or not isinstance(source_in,(int,float)) or not math.isfinite(source_in) or source_in<0:
+                    raise ValueError('Google Flow source_in must be a non-negative number of seconds')
+                capture=cv2.VideoCapture(str(source))
+                try:
+                    source_fps=capture.get(cv2.CAP_PROP_FPS)
+                    source_frames=capture.get(cv2.CAP_PROP_FRAME_COUNT)
+                    source_duration=source_frames/source_fps if source_fps>0 and source_frames>0 else 0
+                finally:
+                    capture.release()
+                if source_duration<=0 or source_in+shot_duration>source_duration+.05:
+                    raise ValueError(f'Google Flow source interval exceeds the exported clip ({source_duration:.2f}s)')
+                image=preview_strip(ffmpeg,source,source_in,shot_duration,work/(sid+'-frames.jpg'))
+                fingerprint=imagehash.phash(image)
+                if any(fingerprint-previous<=4 for previous in hashes):
+                    raise ValueError('Google Flow shot is visually too similar to another selected visual; choose a distinct clip or source interval')
+                hashes.append(fingerprint)
+                generation=visual['generation']
+                flow_record=next(item for item in flow_asset_records if item['output_file']==visual['path'])
+                rights=dict(source_url='https://flow.google.com/',
+                    license_url='https://policies.google.com/terms?hl=en-US',
+                    license='Google Flow generated; review current terms for intended use',
+                    checked_on=datetime.now(timezone.utc).date().isoformat(),status='human-review-required',
+                    model=generation['model'],prompt=generation['prompt'],credit_source=generation['credit_source'],
+                    credits_used=generation['credits_used'],visible_watermark=generation['visible_watermark'],
+                    source_sha256=flow_record['sha256'],watermark_note='Retain Flow provenance marks; do not remove, cover, or crop them')
+                shot=dict(common,path=str(source),type='video',kind='google_flow',source_id='google-flow:'+flow_record['sha256'],
+                    rights=rights,preview_path=str(work/(sid+'-frames.jpg')),asset_title='Google Flow generated clip',
+                    asset_license='Google Flow generated; current terms and subject rights require review',**{'in':source_in},fit='contain')
             else:
                 path=work/(sid+'.mp4')
                 render_graphic(visual,shot_duration,w,h,fps,path,ffmpeg,plan.get('palette'))
@@ -523,6 +657,8 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
     credits=['# Media credits','Include these credits with distribution. Clips were trimmed/reframed and combined with narration/captions.','']
     for asset in assets:
         credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
+    for asset in flow_asset_records:
+        credits.append(f'- Google Flow generated clip: {asset["output_file"]}; model {asset["model"]}; aspect ratio {asset["aspect_ratio"]}; {asset["credits_used"]} credits from {asset["credit_source"]}; visible watermark recorded as {asset["visible_watermark"]}. Prompt and source hash are recorded in google-flow-assets.json. Review current Google terms and subject rights before distribution; retain provenance marks.')
     if tts_engine=='pocket':
         credits+=['',f'Voice synthesis: Pocket TTS by Kyutai Labs; model weights licensed CC BY 4.0 ({runtime.get("pocket_model", "https://huggingface.co/kyutai/pocket-tts")}).',
                   f'Voice preset: {runtime.get("pocket_voice")}; source {runtime.get("pocket_voice_creator")}; {runtime.get("pocket_voice_license")}; {runtime.get("pocket_voice_catalog")}/{runtime.get("pocket_voice_source")}. Check the exact voice terms and include any required attribution before distribution.']
@@ -549,9 +685,13 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
     (output/'CREDITS.md').write_text('\n'.join(credits)+'\n',encoding='utf-8')
     board_path=write_storyboard(plan,shots,output)
     footage_fraction=sum(s['duration'] for s in shots if s['kind']=='stock')/cursor
-    record_stage(output,'storyboard_ready','ready_for_review',dict(path=board_path,shots=len(shots),footage_fraction=footage_fraction))
+    google_flow_fraction=sum(s['duration'] for s in shots if s['kind']=='google_flow')/cursor
+    record_stage(output,'storyboard_ready','ready_for_review',dict(path=board_path,shots=len(shots),footage_fraction=footage_fraction,
+        google_flow_fraction=google_flow_fraction,google_flow_clips=len(flow_asset_records),google_flow_credits_recorded=flow_credits))
     if draft_only:
         report=dict(status='draft',storyboard=board_path,shots=len(shots),paid_services=[],external_services=external_services,
+                    google_flow_clips=len(flow_asset_records),google_flow_credits_recorded=flow_credits,
+                    google_flow_fraction=google_flow_fraction,
                     next_step='Review storyboard.html and revise plan.json; run without --draft-only to render the final video.')
         record_stage(output,'draft_only_complete','ready_for_review',report)
         (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
@@ -604,8 +744,9 @@ def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_ov
         im.thumbnail((470,264)); x=(i%3)*480; y=(i//3)*300; sheet.paste(im,(x,y)); draw.text((x+5,y+270),label,fill='white')
     sheet.save(output/'review-contact-sheet.jpg',quality=92)
     report=dict(status='ready_for_creative_review',full_decode=True,streams=actual,duration=cursor,shots=len(shots),unique_stock_sources=len(used),
-                footage_fraction=footage_fraction,caption_timing=caption_method,narration_differences=differences,
-                license_check='Commons metadata allowlist with saved evidence; personality/property rights and visual relevance need review',
+                unique_google_flow_sources=len(flow_asset_records),google_flow_credits_recorded=flow_credits,
+                footage_fraction=footage_fraction,google_flow_fraction=google_flow_fraction,caption_timing=caption_method,narration_differences=differences,
+                license_check='Commons metadata allowlist with saved evidence; Google Flow terms, watermark, personality/property rights, and visual relevance need human review',
                 creative_review='pending: agent must inspect source/action fit, contact sheet, motion, narration and captions',
                 warnings=warnings+caption_warnings,caption_quality=dict(errors=caption_errors,warnings=caption_warnings,
                     asr_differences=len(differences),method=caption_method),
