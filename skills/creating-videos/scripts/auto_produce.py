@@ -31,6 +31,14 @@ def validate_plan(plan):
         raise ValueError('This workflow permits no paid services')
     if not plan.get('brief', '').strip() or not plan.get('beats'):
         raise ValueError('An audience/purpose brief and narration beats are required')
+    pacing=plan.get('pacing',{})
+    if not isinstance(pacing,dict):
+        raise ValueError('pacing must be an object when provided')
+    if pacing.get('profile','standard') not in ('standard','short-form'):
+        raise ValueError('pacing.profile must be standard or short-form')
+    change_seconds=pacing.get('target_visual_change_seconds',2.5)
+    if isinstance(change_seconds,bool) or not isinstance(change_seconds,(int,float)) or not math.isfinite(change_seconds) or not 2<=change_seconds<=3:
+        raise ValueError('Short-form target_visual_change_seconds must be between 2 and 3 seconds')
     music=plan.get('music')
     if music not in (None,'original-ambient') and not isinstance(music,dict):
         raise ValueError('music must be null, original-ambient, or a local licensed music object')
@@ -71,6 +79,9 @@ def validate_plan(plan):
                 labels=visual.get('labels',[]); details=visual.get('details',[])
                 if not isinstance(labels,list) or len(labels)!=2 or not isinstance(details,list) or len(details)!=2 or any(not isinstance(value,str) or not value.strip() for value in details):
                     raise ValueError('Comparison graphics need two labels and two concise detail lines')
+            hold_reason=visual.get('hold_reason')
+            if hold_reason is not None and (not isinstance(hold_reason,str) or len(hold_reason.strip())<20):
+                raise ValueError('A short-form hold_reason must explain what viewers need time to read or understand')
     return w,h,fps
 
 
@@ -316,6 +327,8 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     (output/'production-log.json').write_text('[]',encoding='utf-8')
     record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[]))
     ffmpeg=runtime['ffmpeg']; model=Path(runtime['voice']).resolve()
+    pacing=plan.get('pacing',{}); short_form=pacing.get('profile')=='short-form'
+    max_visual_seconds=min(3.05,float(pacing.get('target_visual_change_seconds',2.5))+.55) if short_form else None
     tts_engine=runtime.get('tts_engine','piper')
     pocket_model=pocket_voice_state=None
     if tts_engine=='piper':
@@ -359,10 +372,18 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
             shot_duration=(boundaries[vi+1]-boundaries[vi])/fps
             if shot_duration<1:
                 raise ValueError('Too many shots for the spoken beat; allow at least one second per visual')
+            if short_form and shot_duration>max_visual_seconds and not visual.get('hold_reason'):
+                raise ValueError(
+                    f'Short-form shot {bi+1}:{vi+1} lasts {shot_duration:.2f}s. '
+                    'Split the narration beat or add another distinct, relevant visual to keep changes near every 2–3 seconds. '
+                    'Use hold_reason only when viewers truly need extra time to read or understand.'
+                )
             sid=f'beat-{bi+1:02}-shot-{vi+1:02}'
             common=dict(visual_id=sid,beat_id=f'beat-{bi+1:02}',duration=shot_duration,
                         purpose=visual['why_it_fits'],why_it_fits=visual['why_it_fits'],
                         visual_action=visual.get('action',visual['why_it_fits']))
+            if visual.get('hold_reason'):
+                common['hold_reason']=visual['hold_reason']
             if visual['kind']=='stock':
                 print('SEARCH: '+visual['query'],flush=True)
                 candidates=rank(search(visual['query'],plan.get('minimum_source_width',1280),plan.get('minimum_source_height',720)),visual['query'],shot_duration,used)

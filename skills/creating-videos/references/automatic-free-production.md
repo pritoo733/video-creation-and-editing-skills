@@ -71,6 +71,14 @@ Tell the LLM: “Create a video about [topic] for [audience], [purpose], [length
 
 Copy [`../../../examples/automatic-free/plan.json`](../../../examples/automatic-free/plan.json) and replace its sample subject, narration, source-backed claims, and shot choices. Each narration beat contains one to four short visual actions. Each visual must explain why it supports that exact spoken line. Choose a graphic form that explains the content: `process` for ordered steps, `cycle` for a repeating loop (optionally name its `center_label`), `comparison` for two clearly labeled states (with two short `details` strings), or `chart` for sourced numeric data. A chart requires checked values and a source. Match shot duration to the spoken beat. Add `source_in` only when a reviewed clip interval needs a deliberate trim. Use a stock query specific to visible content, not broad mood terms. An empty search or insufficient clip duration is a sourcing gap: revise the query, use a truthful original graphic, or tell the user; do not silently substitute unrelated media.
 
+For Shorts/Reels/TikTok or another short-form deliverable, set this in `plan.json`:
+
+```json
+"pacing": { "profile": "short-form", "target_visual_change_seconds": 2.5 }
+```
+
+Plan different, narration-matched shots so the renderer can change the scene every 2–3 seconds. The short-form gate rejects any shot over about 3 seconds unless it has a concrete `hold_reason` explaining why viewers need extra time (for example, reading a critical interface step). If it fails, split the spoken beat or add a new relevant visual; do not add an unrelated filler shot. The gate checks cut duration, while editorial review still decides whether each cut feels engaging and belongs to the story.
+
 For an explicit visual checkpoint, collect assets and build the board first:
 
 ```powershell
