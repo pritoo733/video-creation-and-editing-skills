@@ -10,7 +10,7 @@ HyperFrames is an optional route for any LLM with shell access and Node.js suppo
 - **Frame-accurate and repeatable output:** The renderer seeks exact timeline frames in headless Chrome, then encodes with FFmpeg. Make animation a function of the requested composition time; avoid wall-clock timers, unseeded randomness, live network requests, or state that depends on which frames were rendered before it.
 - **Inspectable production stages:** Use init → lint → preview → check/snapshot → render. Read warnings and inspect the preview at normal playback speed before encoding the full piece. A successful `render` alone does not prove the design, story, or motion is good.
 - **Video-first design system:** Create a project `frame.md` from approved brand fonts/colors/tokens, then derive compositions from those values. Keep brand details exact and distinguish real logos/product UI from invented illustrative graphics.
-- **Reusable parts:** Save original transitions, lower thirds, charts, and scene components in the project. Use upstream catalog blocks only after checking each block's license and compatibility; the framework license does not automatically cover third-party media, fonts, models, or catalog assets.
+- **Reusable parts:** Save original transitions, lower thirds, charts, and scene components in the project. Search the HyperFrames catalog for a story-specific starting point, then check the exact block and every bundled dependency before use. The framework license does not automatically cover third-party media, fonts, models, or catalog assets.
 - **Agent portability:** Keep the main video project as editable HTML, local assets, a short `STORYBOARD.md`, `SCRIPT.md` when narrated, and project metadata. The file-based handoff works across LLMs; no specific model provider is required.
 
 ## Start a local project
@@ -27,6 +27,27 @@ npx hyperframes render
 ```
 
 Use the current upstream CLI help if any command differs. Do not put generated media or `node_modules` in this skills repository. Keep the resulting project self-contained, with local media under `assets/` and renders outside source directories.
+
+## Find and use catalog blocks
+
+The [HyperFrames catalog](https://hyperframes.heygen.com/catalog) provides reusable blocks and components. They can add a polished visual motif quickly, but treat them as editable ingredients rather than a whole-video template. Search by the actual story beat and action (for example, “a timeline that reveals steps one by one” or “a restrained 3D product title”), not by vague requests such as “make it cinematic.”
+
+From the video project folder, browse or search, then install only the selected item:
+
+```sh
+npx hyperframes catalog --json
+npx hyperframes catalog --type block --tag transition
+npx hyperframes catalog --query "a clean animated data comparison"
+npx hyperframes add <selected-item-name>
+```
+
+Use `npx hyperframes catalog --help` if the installed CLI has different options. `catalog --json` provides catalog details such as name, type, description, tags, dimensions, duration, and preview URLs; it does not establish that the item and all its dependencies are cleared for the intended use. The CLI docs recommend explicit `add` after browsing in automated workflows.
+
+Before installing or distributing a block, complete the [catalog block review](../../../templates/hyperframes-catalog-review.md): inspect its source and license, then inspect imported, vendored, or remotely loaded packages, media, fonts, logos, and attribution notices. Record each source and its exact license. Keep only items whose terms allow the planned personal or commercial use at zero cost. If a dependency's terms are unclear, require a paid tier, or prohibit the intended use, skip that item and choose another or create an original local component. Do not treat a preview or catalog listing as a rights grant.
+
+After rights review, adapt the block to the scene's message, colors, type, timing, and accessibility needs. Check that it works offline during render: replace remote runtime/media dependencies with cleared local copies when their licenses permit, or choose another block. Run lint and browser checks, preview at normal speed, and render a short representative passage before using the treatment throughout a video. Avoid repeating a signature block across adjacent scenes; each installation should serve a specific story beat.
+
+The upstream repository currently describes seven contributed 3D catalog pieces as being under its Apache-2.0 license, while also calling out bundled or remotely loaded dependencies with separate terms, including GSAP under its Standard License. That is a useful example of why the block and dependency review must be separate; it is not a blanket license statement for the changing catalog. Recheck current source notices at selection time.
 
 ## Production sequence
 
@@ -46,4 +67,4 @@ HyperFrames can make motion precise and repeatable, but it cannot decide what st
 
 ## License and cost boundary
 
-The framework repo is Apache-2.0, and its README describes the local CLI path as having no per-render fee. That does not license input footage, music, fonts, logos, generated media, or separately installed registry components. Keep the composition local and use only assets whose exact license and attribution are recorded. Cloud render, AWS Lambda, external APIs, and hosted design/playground features are outside this free-local route.
+The framework repo is Apache-2.0, and its README describes the local CLI path as having no per-render fee. That does not license input footage, music, fonts, logos, generated media, or separately installed registry components. Keep the composition local and use only assets whose exact license and attribution are recorded. Cloud render, AWS Lambda, external APIs, and hosted design/playground features are outside this free-local route. “Free to install” and “free to use in this video” are separate checks.
