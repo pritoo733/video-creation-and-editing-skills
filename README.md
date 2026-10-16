@@ -34,6 +34,25 @@ See the [investigation and validated before/after example](examples/footage-prom
 
 For website and app videos, follow [interface framing and scrolling](skills/editing-videos/references/interface-motion.md). UI shots default to showing the full frame at a fixed scale; the composer also supports a constant-scale vertical viewport over tall captures, with eased movement and reading pauses. Use real browser recordings for interactive behavior and verify readability at the intended viewing size.
 
+### Create a video with no supplied footage and no paid services
+
+The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original process graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
+
+Install the free local runtime once from this repository root:
+
+```powershell
+python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
+python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
+```
+
+Then ask your LLM to research a topic and audience, create a varied narration-matched plan from the example, and render it:
+
+```powershell
+.\.video-tools\Scripts\python.exe skills\creating-videos\scripts\auto_produce.py path\to\plan.json --output path\to\project\output --runtime .video-tools\runtime.json
+```
+
+Inspect the output contact sheet, clip previews, source/license evidence, full video, captions, and review report. The route can only use suitable public media it can find, and does not clear personality, property, trademark, or factual claims automatically. A completed encode is not a completed creative review. Setup and the initial local speech-recognition model require an internet connection; production runs locally afterward. Package, voice, and footage licenses still apply. No output-quality guarantee can replace editorial review.
+
 ## Install in an agent
 
 From a local clone, install both skills and shared templates into the directory scanned by your LLM agent. The installer also adjusts template references in the installed copies, so they work outside the checkout. For example, on Windows PowerShell:

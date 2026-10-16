@@ -54,7 +54,7 @@ def audit(data):
     for beat, items in beat_shots.items():
         duration = sum(float(shot.get("duration", 0)) for _, shot in items)
         distinct = len({shot.get("visual_id") for _, shot in items})
-        reading_beat = all(interface_shot(shot) and isinstance(shot.get("reading_reason"), str)
+        reading_beat = all((interface_shot(shot) or (shot.get('kind')=='original' and shot.get('visual_state_changes',0)>=2)) and isinstance(shot.get("reading_reason"), str)
                            and shot["reading_reason"].strip() for _, shot in items)
         if duration >= 4 and distinct < 2 and not reading_beat:
             errors.append(f"beat {beat!r}: {duration:.2f}s has fewer than two distinct visuals")

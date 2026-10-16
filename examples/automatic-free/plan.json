@@ -1,0 +1,25 @@
+{
+  "brief": "A calm short explainer for curious adults: show Earth's water in context, then explain three water-cycle stages. Use genuine contextual footage and one original process animation. Do not imply that the footage proves an unobserved event.",
+  "format": {"width": 1280, "height": 720, "fps": 30},
+  "treatment": "mixed",
+  "minimum_source_width": 1280,
+  "minimum_source_height": 720,
+  "music": "original-ambient",
+  "palette": {"background": "#081420", "accent": "#41ddbf"},
+  "claim_sources": ["https://www.usgs.gov/special-topics/water-science-school/science/water-cycle"],
+  "beats": [
+    {
+      "narration": "From space, our planet reveals a world shaped by water. Oceans connect distant shores.",
+      "visuals": [
+        {"kind": "stock", "query": "NASA Earth orbit", "action": "Earth is visible from space", "why_it_fits": "Establishes the planet as the opening sentence describes the view from space"},
+        {"kind": "stock", "query": "ocean waves", "action": "Ocean water moves along a coast", "why_it_fits": "Moves from the global view to the ocean water named in the next sentence"}
+      ]
+    },
+    {
+      "narration": "Water evaporates, forms clouds through condensation, and returns as precipitation. The cycle continues.",
+      "visuals": [
+        {"kind": "process", "title": "Water moves through a continuous cycle", "labels": ["Evaporation", "Condensation", "Precipitation"], "action": "Three stages are revealed in sequence", "why_it_fits": "The diagram reveals each named stage in narration order"}
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+from urllib.parse import urlparse
 
 TRANSITIONS = {'fade', 'dissolve', 'wipeleft', 'wiperight', 'slideleft', 'slideright', 'smoothleft', 'smoothright', 'circleopen', 'fadeblack', 'cut'}
 
@@ -78,7 +79,20 @@ def validate(data, base):
                 if not rights.get(key):
                     raise ValueError(f'shot {i}: missing stock rights record: {key}')
             media_path(base, rights['evidence'])
-            if rights.get('status') != 'reviewed':
+            if rights.get('status') == 'metadata-checked':
+                license_url=urlparse(rights['license_url'])
+                allowed=license_url.hostname in ('creativecommons.org','www.creativecommons.org') and license_url.scheme=='https' and re.fullmatch(r'/(?:licenses/by/(?:2\.0|2\.5|3\.0|4\.0)|publicdomain/(?:zero|mark)/1\.0)/?',license_url.path)
+                if not allowed or rights.get('verification_method')!='commons-api-license-allowlist-v1' or urlparse(rights['source_url']).hostname!='commons.wikimedia.org':
+                    raise ValueError(f'shot {i}: unsupported automated license metadata')
+                evidence=json.loads(media_path(base,rights['evidence']).read_text(encoding='utf-8'))
+                info=(evidence.get('imageinfo') or [{}])[0]
+                meta=info.get('extmetadata',{})
+                evidence_url=meta.get('LicenseUrl',{}).get('value','')
+                if not evidence_url and meta.get('LicenseShortName',{}).get('value','').lower() in ('pd','public domain'):
+                    evidence_url='https://creativecommons.org/publicdomain/mark/1.0/'
+                if evidence_url!=rights['license_url'] or info.get('descriptionurl')!=rights['source_url'] or meta.get('Restrictions',{}).get('value'):
+                    raise ValueError(f'shot {i}: license evidence does not match the selected source')
+            elif rights.get('status') != 'reviewed':
                 raise ValueError(f'shot {i}: stock rights must be reviewed for this use')
         transition = shot.get('transition', {'type': 'cut', 'duration': 0})
         if transition['type'] not in TRANSITIONS:

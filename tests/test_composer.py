@@ -26,6 +26,20 @@ class ManifestChecks(Fixture):
     def test_unreviewed_stock_is_rejected(self):
         self.data['shots'][0]['kind']='stock'
         with self.assertRaisesRegex(ValueError,'rights record'):composer.validate(self.data,self.base)
+    def test_automated_commons_rights_require_matching_allowlisted_evidence(self):
+        evidence=self.base/'license.json'
+        url='https://commons.wikimedia.org/wiki/File:Example.webm'
+        license_url='https://creativecommons.org/licenses/by/4.0/'
+        evidence.write_text(json.dumps(dict(imageinfo=[dict(descriptionurl=url,extmetadata=dict(LicenseUrl={'value':license_url}))])))
+        rights=dict(source_url=url,license_url=license_url,checked_on='2026-10-15',evidence='license.json',
+                    intended_use='Illustrative context',status='metadata-checked',verification_method='commons-api-license-allowlist-v1')
+        self.data['shots'][0].update(kind='stock',rights=rights)
+        composer.validate(self.data,self.base)
+        rights['license_url']='https://creativecommons.org/licenses/by-nc/4.0/'
+        with self.assertRaisesRegex(ValueError,'unsupported automated'):composer.validate(self.data,self.base)
+        rights['license_url']=license_url
+        evidence.write_text(json.dumps(dict(imageinfo=[dict(descriptionurl='https://example.com/other-file')])))
+        with self.assertRaisesRegex(ValueError,'evidence does not match'):composer.validate(self.data,self.base)
     def test_nonfinite_or_off_grid_timing_is_rejected(self):
         for duration in [float('nan'),.01,1.05]:
             self.data['shots'][0]['duration']=duration
