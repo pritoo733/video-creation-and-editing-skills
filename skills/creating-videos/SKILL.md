@@ -30,6 +30,8 @@ For a film-like or footage-led brief, plan shots from actual source media before
 
 For narrated promos, plan several distinct, script-matched visuals within longer sentences. Do not reuse one background clip under a run of changing titles or screenshots. Describe each shot's visible action and why it supports that precise beat; check the adjacent sequence for repeated source, screenshot, crop, and composition. Use deliberate phrase/action changes at a pace viewers can follow, while allowing interfaces and disclosures time to read. See [visual storytelling](references/visual-storytelling.md).
 
+For a new user who needs generated English narration and has not chosen a voice, ask who should narrate before making the full voiceover. With the default Pocket TTS route, generate the 21 English audition samples using `scripts/audition_pocket_voices.py`, show/open its `index.html`, and wait for the user's selection before synthesizing the video narration. Use the selected voice unless the user changes their choice. Make voice license restrictions visible; `cosette` and `jean` are noncommercial-only. If the user has already specified a voice, use that preference instead of delaying production for an audition.
+
 ## Required production record
 
 Maintain these project artifacts as they become available:

@@ -48,6 +48,14 @@ python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.
 
 Accept the model access conditions at <https://huggingface.co/kyutai/pocket-tts>, then authenticate with `hf auth login` before the first render if the weights are gated for your account. Rendering uses the selected model locally on CPU. Use `--pocket-voice` to choose another supported English preset; check its license in the linked voice catalog before distributing, especially for commercial work. The setup step records the selected voice's source, license, and attribution in `runtime.json`; preserve the generated output's `CREDITS.md`. Use `--tts-engine piper` if you prefer the existing ungated Piper workflow or Pocket model access/resources are unsuitable.
 
+For a new user who has not chosen a voice, prepare the full audition before generating video narration. This makes all 21 English presets available to listen to using the same spoken line:
+
+```powershell
+.\.video-tools\Scripts\python.exe skills\creating-videos\scripts\audition_pocket_voices.py --output path\to\project\voice-auditions
+```
+
+Open `path\to\project\voice-auditions\index.html`, listen to the samples, and wait for the user's downloaded `voice-selection.json` or named voice choice. Then rerun setup with `--pocket-voice <selected-id>` and continue. The audition contains voice audio, not a video. Keep the samples and voice choice in the project folder, outside this repository. The page shows the source license and marks `cosette` and `jean` as noncommercial only; the user makes the final selection.
+
 macOS/Linux:
 
 ```sh

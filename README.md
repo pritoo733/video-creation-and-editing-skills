@@ -59,6 +59,14 @@ python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
 python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
 ```
 
+For a new user who has not selected a voice, generate and open the 21-voice Pocket TTS audition page before creating narration. It generates only short voice samples, not a video:
+
+```powershell
+.\.video-tools\Scripts\python.exe skills\creating-videos\scripts\audition_pocket_voices.py --output path\to\project\voice-auditions
+```
+
+Open `voice-auditions/index.html`, listen to the same sample line in each voice, and wait for the user to choose. Then set up the runtime with `--pocket-voice <selected-id>`. If a user already specified a voice, use it directly.
+
 Then ask your LLM to research a topic and audience, create a varied narration-matched plan from the example, and render it:
 
 ```powershell

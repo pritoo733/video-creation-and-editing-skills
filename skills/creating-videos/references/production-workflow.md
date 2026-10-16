@@ -38,6 +38,8 @@ Before full production, make a rendered representative passage with real source 
 
 For narration or voiceover, use the user's specified voice or audition available candidates when the choice matters. Evaluate pronunciation, cadence, expression, pauses, and intelligibility. Do not promise natural-sounding generated speech without listening. Preserve authentic source audio when it matters to the story.
 
+For a new user with no saved voice choice who will use Pocket TTS for English narration, ask who they want on voiceover and prepare the complete 21-preset audition page with `scripts/audition_pocket_voices.py`. Open/show `index.html` and wait for their choice before generating full narration. The page plays the same sample line for every voice, links each source/license, and flags noncommercial-only presets. Respect a direct user choice without making them audition first.
+
 For presenter-led, talking-head, or lip-synced videos, lock the approved narration before planning final cuts, captions, or generated presenter footage. Check the recorded/generated audio against the approved script using speech recognition when available or careful listening; fix meaningful omissions, additions, names, numbers, and pronunciation before editing. Use actual audio and clip durations as timing evidence. Follow [the presenter and talking-head workflow](presenter-workflow.md) for pilots, continuity, synchronization, and resumable production records.
 
 For Piper or another local TTS engine, select an exact model and check both its model terms and underlying dataset terms for the intended use. An earlier voice audition does not establish commercial rights. Keep selection configurable and exclude model files from the repo.
