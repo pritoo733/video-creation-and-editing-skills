@@ -32,7 +32,7 @@ def build_audition(output):
     for voice, (source, license_name, creator) in POCKET_VOICES.items():
         print(f"Generating {voice} sample", flush=True)
         voice_state = model.get_state_for_audio_prompt(voice)
-        with torch.inference_mode():
+        with torch.no_grad():
             samples = model.generate_audio(voice_state, SAMPLE_TEXT).detach().cpu().numpy()
         audio_path = output / f"{voice}.wav"
         wavfile.write(str(audio_path), model.sample_rate,

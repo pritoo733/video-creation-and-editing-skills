@@ -239,9 +239,9 @@ def ass_color(value,default='#41DDBF'):
 
 def write_captions(rows,output,w,h,style='kinetic',accent='#41DDBF'):
     (output/'captions.srt').write_text('\n\n'.join(f'{i+1}\n{timestamp(row["start"])} --> {timestamp(row["end"])}\n{row["text"]}' for i,row in enumerate(rows))+'\n',encoding='utf-8')
-    fontsize=max(24,round(h/1080*58)); outline=max(2,round(h/1080*3)); shadow=max(1,round(h/1080*2))
+    fontsize=max(18,round(min(w/1080*54,h/1080*58))); outline=max(2,round(fontsize/19)); shadow=max(1,round(fontsize/29))
     margin_v=round(h*.12); accent_color=ass_color(accent)
-    header=(f'[Script Info]\nScriptType: v4.00+\nWrapStyle: 2\nScaledBorderAndShadow: yes\nPlayResX: {w}\nPlayResY: {h}\n'
+    header=(f'[Script Info]\nScriptType: v4.00+\nWrapStyle: 0\nScaledBorderAndShadow: yes\nPlayResX: {w}\nPlayResY: {h}\n'
             '[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\n'
             f'Style: Default,Arial,{fontsize},{accent_color},&H00FFFFFF,&H00130E09,&H70000000,-1,0,0,0,100,100,0,0,1,{outline},{shadow},2,{round(w*.08)},{round(w*.08)},{margin_v},1\n'
             '[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n')
@@ -391,7 +391,9 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
                 run([sys.executable,'-m','piper','--model',model,'--output_file',audio],input=beat['narration'].encode('utf-8'))
             else:
                 import torch
-                with torch.inference_mode():
+                # Pocket TTS generates on a worker thread; avoid inference tensors
+                # created here that its worker may need to update in-place.
+                with torch.no_grad():
                     samples=pocket_model.generate_audio(pocket_voice_state,beat['narration']).detach().cpu().numpy()
                 pcm=np.clip(samples,-1,1)
                 wavfile.write(str(audio),pocket_model.sample_rate,(pcm*32767).astype(np.int16))
