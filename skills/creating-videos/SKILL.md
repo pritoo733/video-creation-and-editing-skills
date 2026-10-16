@@ -14,6 +14,7 @@ Own the full lifecycle: research when needed, concept and script, source and cre
 - App or website walkthrough: [app-capture guide](references/app-capture.md), including fixed-scale UI framing and readable scroll captures.
 - Animation, generated visuals, or a motion-led treatment: [creative modes](references/creative-modes.md) and [visual direction](references/visual-direction.md).
 - Promotional, brand, social, or footage-led work: [visual storytelling](references/visual-storytelling.md) and [stock sourcing](references/stock-footage.md). Choose an execution route with [production tooling](references/production-tooling.md).
+- Original custom animation: [motion graphics with p5.js/p5.brush](references/motion-graphics.md). Voiceover, voice synthesis/cloning, and score: [voice and music](references/voice-and-music.md), with separate checks for code, model-weight, speaker-consent, and music rights.
 - Idea-only work with no supplied footage and a no-paid-services requirement: [automatic free production](references/automatic-free-production.md). The agent must still research, script, plan relevant visuals, inspect the actual rendered media, and repair problems; the local runner is an assembly path, not an automatic guarantee of editorial quality.
 
 Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production. When the user only wants changes to an already assembled video, start with the editing skill instead.

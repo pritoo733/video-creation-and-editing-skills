@@ -1,6 +1,6 @@
 # Select tools for the production need
 
-Check installed capabilities, hardware, rights, costs, and export access before choosing the route. These are options, not dependencies of the skill. Source links were checked on 2026-10-15; current versions and terms can change.
+Check installed capabilities, hardware, rights, costs, and export access before choosing the route. These are options, not dependencies of the skill. Source links were checked on 2026-10-16; current versions and terms can change.
 
 | Need | Suitable route | Practical boundary |
 | --- | --- | --- |
@@ -9,6 +9,11 @@ Check installed capabilities, hardware, rights, costs, and export access before 
 | React-based motion design, diagrams, precise typography | [Remotion](https://www.remotion.dev/docs/) | Use when authored graphics serve the story. Check [current licensing](https://www.remotion.dev/docs/license/pricing): eligibility for free commercial use depends on the organization; do not assume all use is free. |
 | Advanced color, tracking, compositing, audio finishing, editable timelines | [DaVinci Resolve/Fusion/Fairlight](https://www.blackmagicdesign.com/products/davinciresolve) | Verify the installed edition, automation interface, hardware, and available features. Free and Studio capabilities differ. |
 | Original 3D scenes or camera animation | [Blender](https://www.blender.org/features/) | Use for a genuine 3D need; allow time for scene design and rendering. An animated diagram may be more useful and cheaper to produce. |
+| Original hand-drawn or textured motion graphics | [p5.js](https://github.com/processing/p5.js) with [p5.brush](https://github.com/acamposuribe/p5.brush) | p5.brush adds watercolor, hatching, and organic vector-field strokes; it currently needs p5.js 2.x + WEBGL or its standalone WebGL2 build. Check LGPL/MIT notices and test browser capture before using it in a production pipeline. |
+| Local original background score | [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5) | Optional heavyweight local music model; upstream project/model state MIT and commercial use. Check current card, hardware (CUDA recommended, alternatives listed), download size, and output similarity before release. |
+| Local voice cloning for a noncommercial project only | [OmniVoice](https://github.com/k2-fsa/OmniVoice) | Source code is Apache-2.0, but pretrained weights are CC BY-NC. Do not use for commercial/monetized/client deliverables. Obtain speaker permission for every clone; it synthesizes speech and is not an audio editor. |
+| Word-level caption correction | [FreeCap](https://github.com/giladbas/FreeCap) or [Capite](https://github.com/muneebkhan08/Capite) | Both describe local Whisper/faster-whisper workflows and MIT code. Use as optional editing aids; verify current dependencies, maturity, and model terms, then correct captions against the actual final audio. |
+| Raw-footage editing pattern | [video-use](https://github.com/browser-use/video-use) | Its MIT workflow inspires transcript → edit decision list → render → cut-boundary review. Its standard transcription setup requests an ElevenLabs key, so use local transcription from this repository instead; do not add paid services to the free route. |
 
 For a footage-led promo, use a timeline that accepts real video intervals rather than a renderer whose primary abstraction is one image/text layout per paragraph. Normalize frame rate, time base, dimensions, rotation, and pixel format before transitions. Account for overlap in the final runtime. Rebuild captions from final speech timing after edits. Keep source audio/dialogue sync when relevant; the included composer uses a supplied final mix and does not perform dialogue editing or J/L cuts automatically.
 

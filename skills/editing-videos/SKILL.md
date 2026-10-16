@@ -9,6 +9,8 @@ Make changes for the user's creative goal and intended destination, preserve mea
 
 For a footage-led timeline with local media, use [shot composition](references/shot-composition.md) for the optional manifest renderer, timed overlays, transitions, caching, and motion diagnostics. Choose real source actions and edit points before styling; a sequence of animated text layouts is insufficient when the brief calls for a film.
 
+For supplied raw clips, interviews, or talking heads, read the [footage-first edit workflow](references/raw-footage-workflow.md), including the EDL and boundary-review gate. For subtitles, read the [caption workflow](references/caption-workflow.md) and correct word timing against the final audio before delivery.
+
 For website or app shots, use [interface motion](references/interface-motion.md): preserve readable full-width framing, start at a fixed scale, and reveal relevant content with a paced browser scroll or a scrolling full-page capture. Ordinary screenshots should not receive an automatic zoom treatment.
 
 ## Edit contract
