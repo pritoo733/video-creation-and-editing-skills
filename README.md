@@ -38,6 +38,8 @@ For raw-footage edits, use the [local footage-first workflow](skills/editing-vid
 
 For frame-accurate, graphics-led or hybrid video scenes, see the optional [HyperFrames local workflow](skills/creating-videos/references/hyperframes-local-workflow.md). It adds an editable HTML animation route with local preview and rendering; the existing footage composer remains the route for source-heavy edits and scrolling interface captures.
 
+For custom HTML, SVG, or React motion design, see the optional [Motion library video workflow](skills/creating-videos/references/motion-library-workflow.md). Motion is the MIT-licensed animation layer; use it with a frame-seekable local renderer for repeatable video output. The automatic Python renderer does not currently include Motion and remains limited to process and chart graphics.
+
 ### Create a video with no supplied footage and no paid services
 
 The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original process graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
