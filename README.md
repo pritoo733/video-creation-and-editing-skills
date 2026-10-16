@@ -52,7 +52,7 @@ For reference-assisted visual direction, use the [searchable prompt-library work
 
 ### Create a video with no supplied footage and no paid services
 
-The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original animated graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
+The optional [automatic production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original animated graphics, generates narration and captions, mixes tracks, and exports a cut with an editable manifest. ElevenLabs is the preferred hosted narration option when the user selects it, approves its use, and configures a key locally; Pocket TTS and Piper remain local fallbacks. The fully local route uses no hosted TTS API. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).
 
 Install the free local runtime once from this repository root:
 
@@ -61,7 +61,9 @@ python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
 python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
 ```
 
-For a new user who has not selected a voice, generate and open the 21-voice Pocket TTS audition page before creating narration. It generates only short voice samples, not a video:
+Ask each new user whether they want ElevenLabs for narration. Never ask for an API key in chat: have them configure `ELEVENLABS_API_KEY` in their local secret store, choose a voice, and set `ELEVENLABS_VOICE_ID`. Explain hosted text processing and possible quota/credit use, and get approval before calling the API. The runner's `auto` mode prefers ElevenLabs when configured; if the user has no key, declines hosted speech, or chooses local TTS, use Pocket TTS (or Piper).
+
+For a new user who chose local Pocket TTS and has not selected a voice, generate and open the 21-voice audition page before creating narration. It generates only short voice samples, not a video:
 
 ```powershell
 .\.video-tools\Scripts\python.exe skills\creating-videos\scripts\audition_pocket_voices.py --output path\to\project\voice-auditions

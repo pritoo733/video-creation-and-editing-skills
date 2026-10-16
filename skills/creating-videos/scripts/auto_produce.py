@@ -7,13 +7,16 @@ import importlib.util
 import io
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
 import wave
-from urllib.parse import urlparse
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote, urlparse
+from urllib.request import Request, urlopen
 from storyboard import write_storyboard
 
 from free_media import search, rank, download
@@ -105,6 +108,25 @@ def record_stage(output, stage, status, details=None):
 def voice_duration(path):
     with wave.open(str(path)) as audio:
         return audio.getnframes()/audio.getframerate()
+
+
+def elevenlabs_speech(text, output_path, ffmpeg, voice_id, api_key, model_id='eleven_multilingual_v2'):
+    """Generate narration through ElevenLabs, keeping credentials out of logs and files."""
+    request_body=json.dumps(dict(text=text,model_id=model_id,voice_settings=dict(
+        stability=0.48,similarity_boost=0.78,style=0.12,use_speaker_boost=True))).encode('utf-8')
+    endpoint=f'https://api.elevenlabs.io/v1/text-to-speech/{quote(voice_id,safe="")}?output_format=mp3_44100_128'
+    request=Request(endpoint,data=request_body,headers={'xi-api-key':api_key,'Content-Type':'application/json','Accept':'audio/mpeg'},method='POST')
+    mp3=Path(output_path).with_suffix('.mp3')
+    try:
+        with urlopen(request,timeout=120) as response:
+            mp3.write_bytes(response.read())
+    except HTTPError as exc:
+        detail=exc.read(1200).decode('utf-8','replace')
+        raise RuntimeError(f'ElevenLabs TTS request failed (HTTP {exc.code}): {detail}') from None
+    except (URLError,TimeoutError) as exc:
+        raise RuntimeError(f'ElevenLabs TTS request could not complete: {exc}') from None
+    run([ffmpeg,'-hide_banner','-loglevel','error','-y','-i',mp3,'-ar','24000','-ac','1','-c:a','pcm_s16le',output_path])
+    mp3.unlink(missing_ok=True)
 
 
 def captions(text, start, speech_duration, max_words=7):
@@ -343,7 +365,7 @@ def export_timeline(shots,tracks,fps,path):
     otio.adapters.write_to_file(timeline,str(path))
 
 
-def produce(plan,output,runtime,draft_only=False,project_root=None):
+def produce(plan,output,runtime,draft_only=False,project_root=None,tts_engine_override='auto',voice_id_override=None):
     import cv2
     import imagehash
     from PIL import Image, ImageDraw
@@ -355,12 +377,23 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
         music_source=(project_root/plan['music']['path']).resolve()
         if not music_source.is_file():
             raise ValueError(f'Music file does not exist: {music_source}')
-    (output/'production-log.json').write_text('[]',encoding='utf-8')
-    record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[]))
     ffmpeg=runtime['ffmpeg']; model=Path(runtime['voice']).resolve()
     pacing=plan.get('pacing',{}); short_form=pacing.get('profile')=='short-form'
     max_visual_seconds=min(3.05,float(pacing.get('target_visual_change_seconds',2.5))+.55) if short_form else None
-    tts_engine=runtime.get('tts_engine','piper')
+    api_key=os.environ.get('ELEVENLABS_API_KEY','').strip()
+    tts_engine=tts_engine_override
+    if tts_engine=='auto':
+        tts_engine='elevenlabs' if api_key else runtime.get('tts_engine','pocket')
+    voice_id=(voice_id_override or os.environ.get('ELEVENLABS_VOICE_ID') or runtime.get('elevenlabs_voice_id') or '').strip()
+    if tts_engine=='elevenlabs':
+        if not api_key:
+            raise ValueError('ElevenLabs was selected but ELEVENLABS_API_KEY is not set. Configure it locally; never put the key in plan.json, runtime.json, chat, or Git.')
+        if not voice_id:
+            raise ValueError('Set ELEVENLABS_VOICE_ID or pass --voice-id after the user selects a voice.')
+        print(f'Using ElevenLabs TTS with voice {voice_id}; the API key is not logged.',flush=True)
+    (output/'production-log.json').write_text('[]',encoding='utf-8')
+    external_services=['ElevenLabs Text to Speech API'] if tts_engine=='elevenlabs' else []
+    record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[],external_services=external_services))
     pocket_model=pocket_voice_state=None
     if tts_engine=='piper':
         if not model.is_file() or not Path(str(model)+'.json').is_file():
@@ -375,21 +408,21 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
         print('Loading Pocket TTS model and voice; first run may download weights from Hugging Face.',flush=True)
         pocket_model=TTSModel.load_model()
         pocket_voice_state=pocket_model.get_state_for_audio_prompt(runtime.get('pocket_voice','alba'))
-    else:
-        raise ValueError(f'Unsupported local TTS engine: {tts_engine}')
+    elif tts_engine!='elevenlabs':
+        raise ValueError(f'Unsupported TTS engine: {tts_engine}')
     (output/'plan.json').write_text(json.dumps(plan,indent=2),encoding='utf-8')
     work=output/'working'; work.mkdir(exist_ok=True)
     shots=[]; tracks=[]; rows=[]; assets=[]; used=set(); hashes=[]; cursor=0; candidate_log=[]
     for bi,beat in enumerate(plan['beats']):
         record_stage(output,'narration','running',dict(beat=bi+1,total_beats=len(plan['beats'])))
         print(f'BEAT {bi+1}/{len(plan["beats"])}: local narration',flush=True)
-        voice_key=(runtime.get('pocket_voice','alba') if tts_engine=='pocket' else str(model.stat().st_mtime_ns))
+        voice_key=(runtime.get('pocket_voice','alba') if tts_engine=='pocket' else voice_id if tts_engine=='elevenlabs' else str(model.stat().st_mtime_ns))
         key=hashlib.sha256((beat['narration']+tts_engine+str(voice_key)).encode()).hexdigest()[:16]
         audio=work/(key+'.wav')
         if not audio.exists():
             if tts_engine=='piper':
                 run([sys.executable,'-m','piper','--model',model,'--output_file',audio],input=beat['narration'].encode('utf-8'))
-            else:
+            elif tts_engine=='pocket':
                 import torch
                 # Pocket TTS generates on a worker thread; avoid inference tensors
                 # created here that its worker may need to update in-place.
@@ -397,6 +430,8 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
                     samples=pocket_model.generate_audio(pocket_voice_state,beat['narration']).detach().cpu().numpy()
                 pcm=np.clip(samples,-1,1)
                 wavfile.write(str(audio),pocket_model.sample_rate,(pcm*32767).astype(np.int16))
+            else:
+                elevenlabs_speech(beat['narration'],audio,ffmpeg,voice_id,api_key,runtime.get('elevenlabs_model_id','eleven_multilingual_v2'))
         spoken=voice_duration(audio); frames=math.ceil((spoken+.35)*fps); duration=frames/fps
         tracks.append(dict(path=str(audio),role='narration',start=cursor,duration=spoken,gain_db=0))
         rows+=captions(beat['narration'],cursor,spoken)
@@ -468,8 +503,10 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     if tts_engine=='pocket':
         credits+=['',f'Voice synthesis: Pocket TTS by Kyutai Labs; model weights licensed CC BY 4.0 ({runtime.get("pocket_model", "https://huggingface.co/kyutai/pocket-tts")}).',
                   f'Voice preset: {runtime.get("pocket_voice")}; source {runtime.get("pocket_voice_creator")}; {runtime.get("pocket_voice_license")}; {runtime.get("pocket_voice_catalog")}/{runtime.get("pocket_voice_source")}. Check the exact voice terms and include any required attribution before distribution.']
-    else:
+    elif tts_engine=='piper':
         credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.']
+    else:
+        credits+=['',f'Voice synthesis: ElevenLabs API; voice ID {voice_id}; model {runtime.get("elevenlabs_model_id","eleven_multilingual_v2")}. Check current account/API pricing and this voice’s terms for the intended use; external voice generation requires the user’s approval.']
     credits+=['Generated process, chart, cycle, and comparison graphics: original procedural output.']
     if isinstance(plan.get('music'),dict):
         music=plan['music']; suffix=music_source.suffix.lower() or '.audio'
@@ -491,7 +528,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     footage_fraction=sum(s['duration'] for s in shots if s['kind']=='stock')/cursor
     record_stage(output,'storyboard_ready','ready_for_review',dict(path=board_path,shots=len(shots),footage_fraction=footage_fraction))
     if draft_only:
-        report=dict(status='draft',storyboard=board_path,shots=len(shots),duration=cursor,paid_services=[],
+        report=dict(status='draft',storyboard=board_path,shots=len(shots),paid_services=[],external_services=external_services,
                     next_step='Review storyboard.html and revise plan.json; run without --draft-only to render the final video.')
         record_stage(output,'draft_only_complete','ready_for_review',report)
         (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
@@ -549,7 +586,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
                 creative_review='pending: agent must inspect source/action fit, contact sheet, motion, narration and captions',
                 warnings=warnings+caption_warnings,caption_quality=dict(errors=caption_errors,warnings=caption_warnings,
                     asr_differences=len(differences),method=caption_method),
-                paid_services=[],sha256=hashlib.sha256(final.read_bytes()).hexdigest())
+                paid_services=[],external_services=external_services,sha256=hashlib.sha256(final.read_bytes()).hexdigest())
     record_stage(output,'production_complete','ready_for_creative_review',dict(output=str(final),storyboard=board_path,sha256=report['sha256']))
     (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps(report,indent=2)); return report
@@ -559,10 +596,12 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan',type=Path); parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--runtime',type=Path,required=True)
+    parser.add_argument('--tts-engine',choices=('auto','elevenlabs','pocket','piper'),default='auto',help='Prefer ElevenLabs when explicitly configured; otherwise use the selected local runtime engine')
+    parser.add_argument('--voice-id',help='Selected ElevenLabs voice ID; can also be set with ELEVENLABS_VOICE_ID')
     parser.add_argument('--draft-only',action='store_true',help='Collect assets and create a reviewable storyboard without rendering the final video')
     args=parser.parse_args()
     try:
-        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')),args.draft_only,args.plan.resolve().parent)
+        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')),args.draft_only,args.plan.resolve().parent,args.tts_engine,args.voice_id)
     except Exception as exc:
         args.output.mkdir(parents=True,exist_ok=True)
         record_stage(args.output,'production_failed','failed',dict(error=str(exc)))
