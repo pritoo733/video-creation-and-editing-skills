@@ -2,6 +2,7 @@
   "brief": "A calm short explainer for curious adults: show Earth's water in context, then explain three water-cycle stages. Use genuine contextual footage and one original cycle animation. Do not imply that the footage proves an unobserved event.",
   "format": {"width": 1280, "height": 720, "fps": 30},
   "treatment": "mixed",
+  "caption_style": "kinetic",
   "minimum_source_width": 1280,
   "minimum_source_height": 720,
   "music": null,

@@ -36,6 +36,8 @@ def validate_plan(plan):
         raise ValueError('pacing must be an object when provided')
     if pacing.get('profile','standard') not in ('standard','short-form'):
         raise ValueError('pacing.profile must be standard or short-form')
+    if plan.get('caption_style','kinetic') not in ('kinetic','clean'):
+        raise ValueError('caption_style must be kinetic or clean')
     change_seconds=pacing.get('target_visual_change_seconds',2.5)
     if isinstance(change_seconds,bool) or not isinstance(change_seconds,(int,float)) or not math.isfinite(change_seconds) or not 2<=change_seconds<=3:
         raise ValueError('Short-form target_visual_change_seconds must be between 2 and 3 seconds')
@@ -107,18 +109,19 @@ def voice_duration(path):
 
 def captions(text, start, speech_duration, max_words=7):
     # Exact source text, approximate intra-sentence timing, explicitly recorded.
-    words=text.split(); chunks=[]; current=[]
-    for word in words:
-        if current and (len(current)>=max_words or len(' '.join(current+[word]))>45):
+    words=text.split(); weights=[max(1,len(word.strip('.,!?;:'))+1) for word in words]
+    total=sum(weights) or 1; cursor=start; timed_words=[]
+    for word,weight in zip(words,weights):
+        end=cursor+speech_duration*weight/total
+        timed_words.append(dict(text=word,start=cursor,end=end)); cursor=end
+    chunks=[]; current=[]
+    for word in timed_words:
+        if current and (len(current)>=max_words or len(' '.join(item['text'] for item in current+[word]))>45):
             chunks.append(current); current=[]
         current.append(word)
     if current: chunks.append(current)
-    weights=[sum(len(word)+1 for word in chunk) for chunk in chunks]; total=sum(weights)
-    result=[]; cursor=start
-    for chunk,weight in zip(chunks,weights):
-        end=cursor+speech_duration*weight/total
-        result.append(dict(start=cursor,end=end,text=' '.join(chunk))); cursor=end
-    return result
+    return [dict(start=chunk[0]['start'],end=chunk[-1]['end'],
+                 text=' '.join(item['text'] for item in chunk),words=chunk) for chunk in chunks]
 
 
 def align_script_words(expected, recognized, duration):
@@ -188,13 +191,13 @@ def caption_rows_from_words(words, duration, max_words=7, max_chars=45):
         if group and (len(group)>=max_words or len(' '.join([item['text'] for item in group]+[word['text']]))>max_chars):
             start=float(group[0]['start'])
             end=min(float(duration),max(float(group[-1]['end']),start+.08))
-            rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group)))
+            rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group),words=group))
             group=[]
         group.append(word)
     if group:
         start=float(group[0]['start'])
         end=min(float(duration),max(float(group[-1]['end']),start+.08))
-        rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group)))
+        rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group),words=group))
     return rows
 
 
@@ -228,10 +231,38 @@ def timestamp(value,ass=False):
     return f'{hour}:{minute:02}:{second:02}.{fraction:02}' if ass else f'{hour:02}:{minute:02}:{second:02},{fraction:03}'
 
 
-def write_captions(rows,output,w,h):
+def ass_color(value,default='#41DDBF'):
+    value=value if isinstance(value,str) and re.fullmatch(r'#[0-9a-fA-F]{6}',value) else default
+    red,green,blue=(int(value[index:index+2],16) for index in (1,3,5))
+    return f'&H00{blue:02X}{green:02X}{red:02X}'
+
+
+def write_captions(rows,output,w,h,style='kinetic',accent='#41DDBF'):
     (output/'captions.srt').write_text('\n\n'.join(f'{i+1}\n{timestamp(row["start"])} --> {timestamp(row["end"])}\n{row["text"]}' for i,row in enumerate(rows))+'\n',encoding='utf-8')
-    header=f'[Script Info]\nPlayResX: {w}\nPlayResY: {h}\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,OutlineColour,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV\nStyle: Default,Arial,{round(w/1920*38)},&H00FFFFFF,&H00100905,1,2,1,2,{round(w*.07)},{round(w*.07)},{round(h*.07)}\n[Events]\nFormat: Layer,Start,End,Style,Text\n'
-    (output/'captions.ass').write_text(header+''.join(f'Dialogue: 0,{timestamp(row["start"],True)},{timestamp(row["end"],True)},Default,{row["text"].replace(chr(10)," ").replace("{","").replace("}","").replace(chr(92),"")}\n' for row in rows),encoding='utf-8')
+    fontsize=max(24,round(h/1080*58)); outline=max(2,round(h/1080*3)); shadow=max(1,round(h/1080*2))
+    margin_v=round(h*.12); accent_color=ass_color(accent)
+    header=(f'[Script Info]\nScriptType: v4.00+\nWrapStyle: 2\nScaledBorderAndShadow: yes\nPlayResX: {w}\nPlayResY: {h}\n'
+            '[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\n'
+            f'Style: Default,Arial,{fontsize},{accent_color},&H00FFFFFF,&H00130E09,&H70000000,-1,0,0,0,100,100,0,0,1,{outline},{shadow},2,{round(w*.08)},{round(w*.08)},{margin_v},1\n'
+            '[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n')
+    events=[]
+    for row in rows:
+        text=row['text'].replace('{','').replace('}','').replace('\\','').replace('\n',' ')
+        if style=='kinetic':
+            tokens=row.get('words') or [dict(text=word,start=row['start'],end=row['end']) for word in text.split()]
+            pieces=['{\\fad(90,110)\\fscx96\\fscy96\\t(0,130,\\fscx100\\fscy100)}']
+            for index,word in enumerate(tokens):
+                word_text=word['text'].replace('{','').replace('}','').replace('\\','')
+                next_start=float(tokens[index+1]['start']) if index+1<len(tokens) else float(row['end'])
+                span=max(.01,min(float(row['end']),next_start)-float(word['start']))
+                centiseconds=max(1,round(span*100))
+                pieces.append(f'{{\\kf{centiseconds}}}{word_text}')
+                if index+1<len(tokens): pieces.append(' ')
+            text=''.join(pieces)
+        else:
+            text='{\\fad(100,120)}'+text
+        events.append(f'Dialogue: 0,{timestamp(row["start"],True)},{timestamp(row["end"],True)},Default,,0,0,0,,{text}\n')
+    (output/'captions.ass').write_text(header+''.join(events),encoding='utf-8')
 
 
 def aligned_captions(ffmpeg,audio,text,output):
@@ -482,9 +513,10 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     caption_errors,caption_warnings=inspect_captions(rows,cursor)
     if caption_errors:
         raise ValueError('Caption quality gate failed: '+str(caption_errors))
-    write_captions(rows,output,w,h)
+    palette=plan.get('palette') if isinstance(plan.get('palette'),dict) else {}
+    write_captions(rows,output,w,h,plan.get('caption_style','kinetic'),palette.get('accent','#41DDBF'))
     record_stage(output,'captions_checked','complete',dict(method=caption_method,differences=len(differences),warnings=caption_warnings))
-    timeline=dict(format=dict(width=w,height=h,fps=fps),expected_duration=cursor,audio=str(work/'mix.wav'),captions=str(output/'captions.ass'),shots=shots)
+    timeline=dict(format=dict(width=w,height=h,fps=fps),expected_duration=cursor,audio=str(work/'mix.wav'),captions=str(output/'captions.ass'),caption_style=plan.get('caption_style','kinetic'),shots=shots)
     audit=editing_module('audit_visual_sequence'); errors,warnings=audit.audit(timeline)
     if errors:
         raise ValueError('Visual sequence needs revision: '+str(errors))
