@@ -11,6 +11,18 @@ Use for promotional films, brand pieces, social edits, footage-led explainers, a
 5. Let the cut follow an action, sentence turn, reveal, or musical phrase. Use a clean cut for continuity; a short dissolve for a change of time or place; a directional or match transition when the visual relationship supports it. Repeated flashy wipes and transitions on every cut can weaken the story.
 6. Carry a continuous narration or ambience bed across visual cuts when it improves continuity. For dialogue edits, preserve complete statements and use J/L cuts only when they preserve source meaning and synchronization.
 
+## Run an engagement pass before rendering
+
+Treat engagement as clear, changing information that rewards attention, not a high cut count. Make sure the opening quickly shows the audience, stakes, or a concrete question; state what the video will help them understand; and deliver that promise in the ending. Remove greetings, repeated setup, and claims that do not move the story forward.
+
+For each narration beat, note the viewer's question and the visual answer. Choose a specific action, reveal, comparison, interface state, or diagram. Build a sequence with contrast and progression (for example, problem → evidence → process → result), varying source, scale, framing, and motion. Every visual must explain or prove that exact beat; a clip that only shares a keyword is not enough. Avoid repeating the same visual, crop, composition, or type treatment in adjacent beats. If there is no suitable footage, make a purposeful graphic or capture the real product state rather than filling the gap with unrelated stock.
+
+For short-form edits, aim for a meaningful visual change every 2–3 seconds, while keeping actions readable and giving important interface steps or evidence time to register. A new crop, animated highlight, or text change counts only when it reveals new information. Break long narration at thought boundaries, vary shot duration when the material calls for it, and reserve brief pauses for emphasis. Avoid both one clip under changing titles and cuts so rapid that viewers cannot understand what changed.
+
+Use captions for accessibility and comprehension: concise phrase-sized lines, accurate timing, strong contrast, and safe placement. Highlight only a few key words when emphasis helps. Let the voice lead; use music and restrained sound accents to underline changes in energy, transitions, or reveals without covering speech. Avoid adding a sound effect to every cut. End with a specific takeaway, payoff, or next action that fulfills the opening promise.
+
+Before rendering the full video, ask: Can a viewer explain the point after watching once? Does each shot add new, relevant information? Is the visual variety purposeful? Can every caption be read? Are the strongest moment and payoff easy to notice? If any answer is no, revise the script, shot order, timing, or mix before adding more effects.
+
 ## Keep each spoken beat visually alive and specific
 
 For promotional montages, split a long sentence at its clauses, actions, or list items and plan more than one visual for that sentence. A useful starting pace is a purposeful change about every 1.5–3 seconds, then adjust for action and reading time. Give very short phrases a compact montage when it helps enumerate distinct ideas. Do not change every frame: viewers need time to register the action, product state, caption, and transition.
