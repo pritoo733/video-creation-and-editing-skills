@@ -11,6 +11,7 @@ SCRIPTS=Path(__file__).resolve().parents[1]/'skills/creating-videos/scripts'
 sys.path.insert(0,str(SCRIPTS))
 import free_media
 import auto_produce
+import motion_graphics
 
 
 def page():
@@ -63,6 +64,27 @@ class PlanAndCaptionChecks(unittest.TestCase):
             self.assertEqual(auto_produce.source_interval('uninterrupted.webm',5),0)
             with self.assertRaisesRegex(ValueError,'No uninterrupted'):
                 auto_produce.source_interval('uninterrupted.webm',10)
+
+
+class MotionGraphicChecks(unittest.TestCase):
+    def test_four_story_graphic_forms_render_deterministic_frames(self):
+        specs=[
+            dict(kind='process',title='A clear process',labels=['Plan','Make','Review']),
+            dict(kind='chart',title='A sourced chart',labels=['A','B'],values=[2,5],source='Source: example'),
+            dict(kind='cycle',title='A repeating cycle',center_label='Core',labels=['Start','Change','Return']),
+            dict(kind='comparison',title='Before and after',labels=['Before','After'],details=['Separate steps','One clear flow']),
+        ]
+        for spec in specs:
+            with self.subTest(kind=spec['kind']):
+                first=motion_graphics.draw_frame(spec,1.2,2.4,640,360,dict(background='#081420',accent='#41ddbf'))
+                second=motion_graphics.draw_frame(spec,1.2,2.4,640,360,dict(background='#081420',accent='#41ddbf'))
+                self.assertEqual(first.size,(640,360))
+                self.assertEqual(first.tobytes(),second.tobytes())
+
+    def test_comparison_requires_two_complete_side_descriptions(self):
+        spec=dict(kind='comparison',labels=['Before','After'],details=['Separate steps'])
+        with self.assertRaisesRegex(ValueError,'two concise detail lines'):
+            motion_graphics.draw_frame(spec,0,2,640,360)
 
 
 if __name__=='__main__':unittest.main()

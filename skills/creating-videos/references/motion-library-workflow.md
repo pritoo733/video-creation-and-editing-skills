@@ -1,6 +1,6 @@
 # Motion library for video graphics
 
-Use [Motion](https://github.com/motiondivision/motion) when a scene needs refined HTML, SVG, or React animation: kinetic type, animated diagrams, callouts, UI highlights, data reveals, and reusable branded transitions. Motion is an animation library, not a video editor or encoder. The repository's automatic Python renderer does **not** currently import Motion; it renders a small set of Pillow process and bar-chart graphics. This guide adds Motion as an optional authoring route for richer scenes.
+Use [Motion](https://github.com/motiondivision/motion) when a scene needs refined HTML, SVG, or React animation: kinetic type, animated diagrams, callouts, UI highlights, data reveals, and reusable branded transitions. Motion is an animation library, not a video editor or encoder. The repository's automatic Python renderer does **not** currently import Motion; it now renders Pillow process, sourced chart, cycle, and comparison graphics. Motion remains an optional authoring route for richer scenes.
 
 ## What is free
 

@@ -1,5 +1,5 @@
 {
-  "brief": "A calm short explainer for curious adults: show Earth's water in context, then explain three water-cycle stages. Use genuine contextual footage and one original process animation. Do not imply that the footage proves an unobserved event.",
+  "brief": "A calm short explainer for curious adults: show Earth's water in context, then explain three water-cycle stages. Use genuine contextual footage and one original cycle animation. Do not imply that the footage proves an unobserved event.",
   "format": {"width": 1280, "height": 720, "fps": 30},
   "treatment": "mixed",
   "minimum_source_width": 1280,
@@ -18,7 +18,7 @@
     {
       "narration": "Water evaporates, forms clouds through condensation, and returns as precipitation. The cycle continues.",
       "visuals": [
-        {"kind": "process", "title": "Water moves through a continuous cycle", "labels": ["Evaporation", "Condensation", "Precipitation"], "action": "Three stages are revealed in sequence", "why_it_fits": "The diagram reveals each named stage in narration order"}
+        {"kind": "cycle", "title": "Water moves through a continuous cycle", "center_label": "Water", "labels": ["Evaporation", "Condensation", "Precipitation"], "action": "The three stages form a continuous loop", "why_it_fits": "A looping diagram shows why water returns to earlier stages"}
       ]
     }
   ]

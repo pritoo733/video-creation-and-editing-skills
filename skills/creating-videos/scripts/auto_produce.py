@@ -65,8 +65,12 @@ def validate_plan(plan):
             if visual.get('kind')=='stock':
                 if not visual.get('query','').strip():
                     raise ValueError('Stock visuals need a subject/action search query')
-            elif visual.get('kind') not in ('process','chart'):
-                raise ValueError('Use stock, process, or chart; no paid generator or silent slide fallback')
+            elif visual.get('kind') not in ('process','chart','cycle','comparison'):
+                raise ValueError('Use stock, process, chart, cycle, or comparison; no paid generator or silent slide fallback')
+            elif visual.get('kind')=='comparison':
+                labels=visual.get('labels',[]); details=visual.get('details',[])
+                if not isinstance(labels,list) or len(labels)!=2 or not isinstance(details,list) or len(details)!=2 or any(not isinstance(value,str) or not value.strip() for value in details):
+                    raise ValueError('Comparison graphics need two labels and two concise detail lines')
     return w,h,fps
 
 
@@ -374,7 +378,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
                 preview_path=work/(sid+'-preview.jpg')
                 preview(ffmpeg,str(path),shot_duration*.65).save(preview_path,quality=90)
                 shot=dict(common,path=str(path),type='video',kind='original',source_id='original:'+sid,preview_path=str(preview_path))
-                shot.update(visual_state_changes=len(visual['labels']),reading_reason='Progressive diagram/chart states follow the spoken explanation without a disruptive cut')
+                shot.update(visual_state_changes=len(visual['labels']),reading_reason='Progressive graphic states follow the spoken explanation while leaving a readable hold')
                 if len(visuals)==1:
                     shot['content_type']='interface' if visual.get('content_type')=='interface' else 'graphic'
             shots.append(shot)
@@ -385,7 +389,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     for asset in assets:
         credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
     credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.',
-              'Generated process/chart graphics: original procedural output.']
+              'Generated process, chart, cycle, and comparison graphics: original procedural output.']
     if isinstance(plan.get('music'),dict):
         music=plan['music']; suffix=music_source.suffix.lower() or '.audio'
         local_music=work/('licensed-music'+suffix); shutil.copy2(music_source,local_music)
