@@ -4,7 +4,7 @@
   "treatment": "mixed",
   "minimum_source_width": 1280,
   "minimum_source_height": 720,
-  "music": "original-ambient",
+  "music": null,
   "palette": {"background": "#081420", "accent": "#41ddbf"},
   "claim_sources": ["https://www.usgs.gov/special-topics/water-science-school/science/water-cycle"],
   "beats": [

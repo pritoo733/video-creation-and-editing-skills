@@ -8,8 +8,26 @@ Use this route when the user has an idea, topic, or brief but no footage, and ha
 - Create original moving process diagrams and sourced charts locally. These are useful when stock footage would be decorative or misleading.
 - Synthesize local English narration with Piper and the included LJ Speech voice model. The model card and dataset attribution travel with the runtime. Check the precise model terms before commercial use; do not replace the approved default with a model found online without checking its dataset license.
 - Create exact-script captions, compare them with local Whisper transcription, and use recognized word timestamps when they agree. If speech differs, flag the mismatch and preserve the script captions for review.
-- Mix separate narration, optional original ambient texture, music, effects, and ambience tracks. The mixer ducks music under speech and writes an editable track manifest.
+- Mix narration and optional music/effects/ambience tracks. The mixer ducks music under speech and writes an editable track manifest. The example plan does not add a synthetic sine-wave “score”; silence is preferable when no suitable cue exists.
 - Generate an optional original local score with [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5) in a separate environment after confirming the current model/license terms, hardware, and disk needs. This is not part of the lightweight runner or default install; if the model cannot run, use a rights-cleared source cue or no music.
+- To include a locally generated or licensed score, add a `music` object to `plan.json`. `path` is relative to the plan file; the remaining rights fields are copied into the project manifest and `CREDITS.md`. The runner copies the music into the project output and ducks it under narration:
+
+```json
+"music": {
+  "path": "assets/score.wav",
+  "gain_db": -22,
+  "rights": {
+    "creator": "ACE-Step 1.5 (local generation)",
+    "source_url": "https://github.com/ace-step/ACE-Step-1.5",
+    "license": "Verify the exact model-card terms used for this output",
+    "license_url": "https://huggingface.co/ACE-Step/Ace-Step1.5",
+    "checked_on": "YYYY-MM-DD",
+    "attribution": "Prompt and generation settings are recorded in project notes."
+  }
+}
+```
+
+Use the current exact model and output terms; do not copy this example's placeholder license wording as proof. `music: null` produces no music. The legacy `original-ambient` option makes a quiet harmonic texture, not a professionally composed soundtrack.
 - Export MP4, SRT/ASS captions, credits, a contact sheet, candidate selection log, audio manifest, JSON edit manifest, and an OpenTimelineIO timeline.
 
 It does not use a hosted video-generation API, paid stock account, or paid TTS service. It cannot manufacture documentary evidence, product UI, testimonials, or genuine camera footage. Original diagrams are illustrative. Online source search and the initial Whisper model download require internet access; rendering and speech are local. The first model downloads use disk space and CPU time. Results depend on suitable public media being available, hardware, research quality, and human review. No API cost does not mean that each asset has no obligations: distribute required CC BY credit and check privacy, trademark, property, and other rights that the file license does not clear.
@@ -67,7 +85,7 @@ The renderer validates timing and decodability, but software checks cannot judge
 1. Play the full MP4 with sound. Check that narration is natural and intelligible, transitions have no gaps, the mix does not clip, and the ending lands.
 2. Inspect `review-contact-sheet.jpg` and every saved `*-preview.jpg`. Reject unrelated visuals, misleading context, repeated compositions, logos/people that imply an endorsement, or footage that does not visibly match its description. Inspect important footage at several points, not only its midpoint.
 3. Read the shot manifest and `candidate-log.json`. Verify every source interval, distinct source, narration-specific purpose, and license page. A metadata allowlist is not a legal clearance.
-4. Play the captions and compare `transcript.json` with narration. The report marks approximate captions when local speech recognition disagrees; correct the script or audio and rebuild. Inspect line breaks, contrast, safe areas, and readability on a phone.
+4. Play the captions and compare `transcript.json` with narration. When local speech recognition disagrees, the renderer now preserves matching word timings and estimates only the mismatched spans; the method and affected word indexes are recorded for review. Correct these captions before delivery. Check cue timing, line breaks, contrast, safe areas, and readability on a phone.
 5. Review `CREDITS.md`; retain required CC BY attribution when sharing. Keep source licenses, media, manifests, timeline, and output together for an editable handoff.
 6. If any required claim/source/shot is unresolved, return to research or planning. Render a corrected cut and review the new export, not only its plan.
 

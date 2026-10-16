@@ -9,9 +9,11 @@ import json
 import math
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import wave
+from urllib.parse import urlparse
 from storyboard import write_storyboard
 
 from free_media import search, rank, download
@@ -29,6 +31,23 @@ def validate_plan(plan):
         raise ValueError('This workflow permits no paid services')
     if not plan.get('brief', '').strip() or not plan.get('beats'):
         raise ValueError('An audience/purpose brief and narration beats are required')
+    music=plan.get('music')
+    if music not in (None,'original-ambient') and not isinstance(music,dict):
+        raise ValueError('music must be null, original-ambient, or a local licensed music object')
+    if isinstance(music,dict):
+        if not music.get('path') or not isinstance(music.get('rights'),dict):
+            raise ValueError('A music object needs a local path and rights record')
+        rights=music['rights']
+        required=('creator','source_url','license','license_url','checked_on','attribution')
+        if any(not isinstance(rights.get(key),str) or not rights[key].strip() for key in required):
+            raise ValueError('Music rights need creator, source_url, license, license_url, checked_on, and attribution')
+        for key in ('source_url','license_url'):
+            parsed=urlparse(rights[key])
+            if parsed.scheme!='https' or not parsed.hostname:
+                raise ValueError(f'Music rights {key} must be an https URL')
+        gain=music.get('gain_db',-22)
+        if isinstance(gain,bool) or not isinstance(gain,(int,float)) or not math.isfinite(gain) or not -60<=gain<=0:
+            raise ValueError('Music gain_db must be between -60 and 0 dB')
     fmt=plan.get('format',{}); w=fmt.get('width',1920); h=fmt.get('height',1080); fps=fmt.get('fps',30)
     for value in (w,h):
         if not isinstance(value,int) or isinstance(value,bool) or not 320<=value<=3840 or value%2:
@@ -87,6 +106,107 @@ def captions(text, start, speech_duration, max_words=7):
     return result
 
 
+def align_script_words(expected, recognized, duration):
+    """Keep trustworthy Whisper word times and estimate only mismatched spans."""
+    normalize=lambda word: re.sub(r'[^a-z0-9]', '', word.lower())
+    expected_norm=[normalize(word) for word in expected]
+    recognized_norm=[normalize(word['text']) for word in recognized]
+    matcher=difflib.SequenceMatcher(None,expected_norm,recognized_norm,autojunk=False)
+    aligned=[None]*len(expected); estimated=set()
+    for operation, i1, i2, j1, j2 in matcher.get_opcodes():
+        if operation=='equal':
+            for offset in range(i2-i1):
+                item=recognized[j1+offset]
+                start=max(0.0,min(float(duration),float(item['start'])))
+                end=max(start,min(float(duration),float(item['end'])))
+                aligned[i1+offset]=dict(text=expected[i1+offset],start=start,end=end)
+        elif operation=='replace' and i2>i1 and j2>j1:
+            start=max(0.0,min(float(duration),min(float(word['start']) for word in recognized[j1:j2])))
+            end=max(start,min(float(duration),max(float(word['end']) for word in recognized[j1:j2])))
+            weights=[max(1,len(word.strip('.,!?;:'))+1) for word in expected[i1:i2]]
+            total=sum(weights) or 1; cursor=start
+            for index,weight in zip(range(i1,i2),weights):
+                next_time=end if index==i2-1 else cursor+(end-start)*weight/total
+                aligned[index]=dict(text=expected[index],start=cursor,end=next_time)
+                estimated.add(index); cursor=next_time
+        elif operation=='delete':
+            estimated.update(range(i1,i2))
+
+    # If recognition missed script words, fill only their local gap. This keeps
+    # correct timestamps elsewhere instead of replacing the entire track with
+    # character-weighted estimates.
+    index=0
+    while index<len(aligned):
+        if aligned[index] is not None:
+            index+=1; continue
+        end_index=index+1
+        while end_index<len(aligned) and aligned[end_index] is None:
+            end_index+=1
+        left=float(aligned[index-1]['end']) if index else 0.0
+        right=float(aligned[end_index]['start']) if end_index<len(aligned) else float(duration)
+        span=max(0.0,right-left)
+        weights=[max(1,len(word.strip('.,!?;:'))+1) for word in expected[index:end_index]]
+        total=sum(weights) or 1
+        if span>0:
+            cursor=left
+            for offset,weight in enumerate(weights):
+                next_time=right if offset==len(weights)-1 else cursor+span*weight/total
+                aligned[index+offset]=dict(text=expected[index+offset],start=cursor,end=next_time)
+                cursor=next_time
+        else:
+            # Zero-width recognition gaps cannot be aligned from audio evidence.
+            # Give the missing words a short local cue window and flag them.
+            window=min(float(duration),max(.16,.12*len(weights)))
+            cursor=max(0.0,min(left,right)-window)
+            step=window/max(1,len(weights))
+            for offset in range(len(weights)):
+                aligned[index+offset]=dict(text=expected[index+offset],start=cursor+offset*step,end=min(float(duration),cursor+(offset+1)*step))
+                estimated.add(index+offset)
+        estimated.update(range(index,end_index))
+        index=end_index
+    return aligned, sorted(estimated)
+
+
+def caption_rows_from_words(words, duration, max_words=7, max_chars=45):
+    rows=[]; group=[]
+    for word in words:
+        if group and (len(group)>=max_words or len(' '.join([item['text'] for item in group]+[word['text']]))>max_chars):
+            start=float(group[0]['start'])
+            end=min(float(duration),max(float(group[-1]['end']),start+.08))
+            rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group)))
+            group=[]
+        group.append(word)
+    if group:
+        start=float(group[0]['start'])
+        end=min(float(duration),max(float(group[-1]['end']),start+.08))
+        rows.append(dict(start=start,end=end,text=' '.join(item['text'] for item in group)))
+    return rows
+
+
+def inspect_captions(rows, duration):
+    errors=[]; warnings=[]
+    previous_end=0.0
+    for number,row in enumerate(rows,1):
+        start=float(row['start']); end=float(row['end']); text=row['text']
+        if not math.isfinite(start) or not math.isfinite(end) or start<0 or end<=start or end>duration+.05:
+            errors.append(f'cue {number}: invalid timing {start:.3f}–{end:.3f}s for {duration:.3f}s video')
+            continue
+        if start<previous_end-.05:
+            warnings.append(f'cue {number}: overlaps the previous cue')
+        cue_duration=end-start
+        rate=len(text)/cue_duration
+        if cue_duration<.5:
+            warnings.append(f'cue {number}: shorter than 0.5 seconds')
+        if rate>22:
+            warnings.append(f'cue {number}: fast reading rate ({rate:.1f} characters/second)')
+        if rate>32:
+            errors.append(f'cue {number}: exceeds 32 characters/second')
+        if len(text)>90:
+            warnings.append(f'cue {number}: long caption line ({len(text)} characters)')
+        previous_end=end
+    return errors,warnings
+
+
 def timestamp(value,ass=False):
     scale=100 if ass else 1000; value=round(value*scale)
     hour,value=divmod(value,3600*scale); minute,value=divmod(value,60*scale); second,fraction=divmod(value,scale)
@@ -107,18 +227,14 @@ def aligned_captions(ffmpeg,audio,text,output):
     segments,_=model.transcribe(np.frombuffer(pcm,dtype=np.float32),language='en',beam_size=5,word_timestamps=True,vad_filter=True)
     words=[dict(text=word.word.strip(),start=word.start,end=word.end) for segment in segments for word in (segment.words or [])]
     expected=text.split(); normalize=lambda word: re.sub(r'[^a-z0-9]','',word.lower())
-    a=[normalize(w) for w in expected]; b=[normalize(w['text']) for w in words]
-    differences=[dict(operation=op,expected=' '.join(expected[i:j]),recognized=' '.join(w['text'] for w in words[k:l])) for op,i,j,k,l in difflib.SequenceMatcher(None,a,b).get_opcodes() if op!='equal']
-    (output/'transcript.json').write_text(json.dumps(dict(words=words,differences=differences),indent=2),encoding='utf-8')
-    if differences:
-        return None,differences
-    result=[]; group=[]
-    for original,word in zip(expected,words):
-        if group and (len(group)>=7 or len(' '.join([w['text'] for w in group]+[original]))>45):
-            result.append(dict(start=group[0]['start'],end=group[-1]['end'],text=' '.join(w['text'] for w in group))); group=[]
-        group.append(dict(word,text=original))
-    if group: result.append(dict(start=group[0]['start'],end=group[-1]['end'],text=' '.join(w['text'] for w in group)))
-    return result,[]
+    a=[normalize(word) for word in expected]; b=[normalize(word['text']) for word in words]
+    opcodes=difflib.SequenceMatcher(None,a,b,autojunk=False).get_opcodes()
+    differences=[dict(operation=op,expected=' '.join(expected[i:j]),recognized=' '.join(w['text'] for w in words[k:l])) for op,i,j,k,l in opcodes if op!='equal']
+    audio_duration=len(pcm)/(16000*4)
+    aligned,estimated=align_script_words(expected,words,audio_duration)
+    (output/'transcript.json').write_text(json.dumps(dict(words=words,differences=differences,
+        alignment='partial' if estimated else 'exact',estimated_script_word_indexes=estimated),indent=2),encoding='utf-8')
+    return caption_rows_from_words(aligned,audio_duration),differences
 
 
 def source_interval(path, duration):
@@ -181,12 +297,18 @@ def export_timeline(shots,tracks,fps,path):
     otio.adapters.write_to_file(timeline,str(path))
 
 
-def produce(plan,output,runtime,draft_only=False):
+def produce(plan,output,runtime,draft_only=False,project_root=None):
     import cv2
     import imagehash
     from PIL import Image, ImageDraw
     from motion_graphics import render as render_graphic
     w,h,fps=validate_plan(plan); output=Path(output).resolve(); output.mkdir(parents=True,exist_ok=True)
+    project_root=Path(project_root or output).resolve()
+    music_source=None
+    if isinstance(plan.get('music'),dict):
+        music_source=(project_root/plan['music']['path']).resolve()
+        if not music_source.is_file():
+            raise ValueError(f'Music file does not exist: {music_source}')
     (output/'production-log.json').write_text('[]',encoding='utf-8')
     record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[]))
     ffmpeg=runtime['ffmpeg']; model=Path(runtime['voice']).resolve()
@@ -263,7 +385,22 @@ def produce(plan,output,runtime,draft_only=False):
     for asset in assets:
         credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
     credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.',
-              'Generated process/chart graphics and optional harmonic bed: original procedural output.']
+              'Generated process/chart graphics: original procedural output.']
+    if isinstance(plan.get('music'),dict):
+        music=plan['music']; suffix=music_source.suffix.lower() or '.audio'
+        local_music=work/('licensed-music'+suffix); shutil.copy2(music_source,local_music)
+        rights=music['rights']
+        track=dict(path=str(local_music),role='music',start=0,duration=cursor,gain_db=music.get('gain_db',-22),
+                   source_path=str(music_source),source_url=rights['source_url'],license=rights['license'],
+                   license_url=rights['license_url'],creator=rights['creator'],checked_on=rights['checked_on'],
+                   attribution=rights['attribution'],sha256=hashlib.sha256(local_music.read_bytes()).hexdigest())
+        tracks.append(track)
+        credits.append(f'- Music: {rights["creator"]}; {rights["source_url"]}; {rights["license"]}: {rights["license_url"]}; checked {rights["checked_on"]}. {rights["attribution"]}')
+    elif plan.get('music')=='original-ambient':
+        bed=work/'original-ambient.wav'; ambient_bed(bed,cursor)
+        tracks.append(dict(path=str(bed),role='music',start=0,duration=cursor,gain_db=-20,
+                           note='Simple generated harmonic ambience, not a composed score'))
+        credits.append('- Audio bed: original procedural harmonic ambience; no third-party recording.')
     (output/'CREDITS.md').write_text('\n'.join(credits)+'\n',encoding='utf-8')
     board_path=write_storyboard(plan,shots,output)
     footage_fraction=sum(s['duration'] for s in shots if s['kind']=='stock')/cursor
@@ -276,20 +413,25 @@ def produce(plan,output,runtime,draft_only=False):
         print(json.dumps(report,indent=2)); return report
     if plan.get('treatment','mixed')=='footage-led' and footage_fraction<.5:
         raise ValueError('A footage-led brief needs at least half its runtime from relevant actual footage')
-    if plan.get('music')=='original-ambient':
-        bed=work/'original-ambient.wav'; ambient_bed(bed,cursor)
-        tracks.append(dict(path=str(bed),role='music',start=0,duration=cursor,gain_db=-20))
     record_stage(output,'audio_mix','running',dict(tracks=len(tracks),duration=cursor))
     editing_module('mix_audio').mix(tracks,cursor,work/'mix.wav',ffmpeg)
     print('CHECK: local speech transcription and caption timing',flush=True)
     aligned,differences=aligned_captions(ffmpeg,work/'mix.wav',' '.join(beat['narration'] for beat in plan['beats']),output)
-    caption_method='ASR word timestamps checked against the exact narration script'
+    caption_method='Local ASR word timestamps aligned to the exact narration script'
     if aligned:
         rows=aligned
+        transcript=json.loads((output/'transcript.json').read_text(encoding='utf-8'))
+        if transcript.get('estimated_script_word_indexes'):
+            caption_method=f'Local ASR word timestamps; {len(transcript["estimated_script_word_indexes"])} mismatched script words received local estimated timing and require review'
+        elif differences:
+            caption_method='Local ASR timestamps; extra recognized speech was excluded from the exact script captions and requires review'
     else:
         caption_method='measured sentence audio; estimated word groups retained because ASR disagreed; review required'
+    caption_errors,caption_warnings=inspect_captions(rows,cursor)
+    if caption_errors:
+        raise ValueError('Caption quality gate failed: '+str(caption_errors))
     write_captions(rows,output,w,h)
-    record_stage(output,'captions_checked','complete',dict(method=caption_method,differences=len(differences)))
+    record_stage(output,'captions_checked','complete',dict(method=caption_method,differences=len(differences),warnings=caption_warnings))
     timeline=dict(format=dict(width=w,height=h,fps=fps),expected_duration=cursor,audio=str(work/'mix.wav'),captions=str(output/'captions.ass'),shots=shots)
     audit=editing_module('audit_visual_sequence'); errors,warnings=audit.audit(timeline)
     if errors:
@@ -319,7 +461,9 @@ def produce(plan,output,runtime,draft_only=False):
                 footage_fraction=footage_fraction,caption_timing=caption_method,narration_differences=differences,
                 license_check='Commons metadata allowlist with saved evidence; personality/property rights and visual relevance need review',
                 creative_review='pending: agent must inspect source/action fit, contact sheet, motion, narration and captions',
-                warnings=warnings,paid_services=[],sha256=hashlib.sha256(final.read_bytes()).hexdigest())
+                warnings=warnings+caption_warnings,caption_quality=dict(errors=caption_errors,warnings=caption_warnings,
+                    asr_differences=len(differences),method=caption_method),
+                paid_services=[],sha256=hashlib.sha256(final.read_bytes()).hexdigest())
     record_stage(output,'production_complete','ready_for_creative_review',dict(output=str(final),storyboard=board_path,sha256=report['sha256']))
     (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps(report,indent=2)); return report
@@ -332,7 +476,7 @@ if __name__=='__main__':
     parser.add_argument('--draft-only',action='store_true',help='Collect assets and create a reviewable storyboard without rendering the final video')
     args=parser.parse_args()
     try:
-        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')),args.draft_only)
+        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')),args.draft_only,args.plan.resolve().parent)
     except Exception as exc:
         args.output.mkdir(parents=True,exist_ok=True)
         record_stage(args.output,'production_failed','failed',dict(error=str(exc)))

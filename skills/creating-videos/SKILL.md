@@ -46,6 +46,7 @@ Maintain these project artifacts as they become available:
 - Never start a paid job, subscription, or trial without the user's explicit approval.
 - Creating a video does not authorize publishing, sending, or uploading it.
 - Review the rendered export with the editing skill's checklist before delivery.
+- Treat review as an iteration loop: inspect every shot's sampled frames and the full cut at normal speed, record concrete issues, repair them in the script/plan/assets/edit, and render again. Continue until no blocking visual, narrative, rights, caption, or audio issues remain. Automated checks can establish technical properties; they cannot certify that the story is excellent. If the host cannot inspect video/audio, state that limitation instead of calling the result fully reviewed.
 
 ## Typical deliverables
 
