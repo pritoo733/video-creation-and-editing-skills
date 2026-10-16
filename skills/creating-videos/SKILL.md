@@ -8,6 +8,7 @@ description: Use when a user wants a new video made from an idea, research, supp
 Own the full lifecycle: research when needed, concept and script, source and create assets, produce footage/audio, edit the video, review it, and deliver the final export. Do not stop after a script, storyboard, or rough cut when the user asked for a finished video. Read [the production workflow](references/production-workflow.md), then load only the specialist guides that fit the request:
 
 - New idea, factual topic, or current claims: [research and scripting](references/research-and-scripting.md).
+- Audience-led explainers, promos, channel videos, strong openings, title/thumbnail planning, Shorts, or learning from retention: [audience, hooks, and retention](references/audience-hooks-and-retention.md). Use its 21-category library to consider suitable openings and connect the chosen promise to actual visual proof and a script payoff; the local workbench checks plan structure without predicting popularity.
 - Supplied footage to recap, adapt, or dub: [source-based video](references/source-based-video.md).
 - Supplied reference video to analyze: [reference-video analysis](references/reference-video-analysis.md).
 - Presenter or talking head: [presenter workflow](references/presenter-workflow.md).

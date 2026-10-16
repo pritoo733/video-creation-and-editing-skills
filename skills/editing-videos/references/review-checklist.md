@@ -58,4 +58,6 @@ Use automated checks for properties they can establish (decode errors, stream me
 
 ## Repair and final record
 
+For audience-led work, also check that the title/poster, first spoken line, first visual, and actual payoff agree. When authorized retention data is supplied, follow [the audience and retention guide](../../creating-videos/references/audience-hooks-and-retention.md) and use `scripts/analyze_retention.py` to locate sampled intervals for inspection. Correlation with a beat is not proof of why viewers left; retain context when preparing a Short or proposing a revision.
+
 Repair every material issue found and re-export. Review repaired scenes and run the relevant technical checks again. Record the final file name, runtime, dimensions, frame rate, audio format, caption format, review coverage, unresolved limitations, and source/edit manifest location. Do not label a partially reviewed render as fully reviewed.

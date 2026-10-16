@@ -1,4 +1,4 @@
-import importlib.util, tempfile, unittest
+import importlib.util, json, subprocess, sys, tempfile, unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('installer',ROOT/'scripts/install_skills.py')
@@ -18,6 +18,9 @@ class InstallationChecks(unittest.TestCase):
             motion_ref=dest/'creating-videos/references/motion-design-production.md'
             self.assertIn('../assets/templates/visual-beat-sheet.md',motion_ref.read_text(encoding='utf-8'))
             self.assertTrue((motion_ref.parent/'../assets/motion-starter/index.html').resolve().is_file())
+            checked=subprocess.run([sys.executable,str(dest/'creating-videos/scripts/hook_workbench.py'),str(dest/'creating-videos/assets/script-package.example.json')],cwd=tmp,capture_output=True,text=True)
+            self.assertEqual(checked.returncode,0,checked.stderr)
+            self.assertEqual(json.loads(checked.stdout)['status'],'editorial_review_required')
             with self.assertRaisesRegex(ValueError,'already exists'):installer.install(ROOT,dest)
             installer.install(ROOT,dest,update=True)
 

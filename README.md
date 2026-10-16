@@ -44,6 +44,8 @@ For **custom motion-design films**, use [motion-design production](skills/creati
 
 See the [motion-design validation record](examples/motion-design/validation.md) for the actual pilot render, portrait checks, integration tests, and review limits.
 
+For stronger audience-led scripts, see [audience, hooks, packaging, and retention](skills/creating-videos/references/audience-hooks-and-retention.md). Informed by [youtube-agent-skill](https://github.com/Jakeschincariol/youtube-agent-skill), it adds an adapted 21-category hook library, an audience/voice profile, title-thumbnail-opening planning, explicit promise-to-payoff mapping, context-preserving Shorts, and a feedback loop. Two original Python stdlib helpers check hook/script packages and describe normalized retention exports locally. They need no API key or paid service, and make no virality or causal-retention prediction. The upstream MIT notice is retained with the adapted taxonomy.
+
 ### Create a video with no supplied footage and no paid services
 
 The optional [automatic free production route](skills/creating-videos/references/automatic-free-production.md) can start from a topic or brief. The LLM researches and writes the video plan; the local Python runner finds eligible Commons clips, creates original animated graphics, generates local narration and captions, mixes tracks, and exports a cut with an editable manifest. No API key or paid generator is used. A complete sample plan is in [`examples/automatic-free/plan.json`](examples/automatic-free/plan.json).

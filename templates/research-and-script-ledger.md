@@ -14,6 +14,18 @@
 |---|---|---|---|---|
 | | | | | |
 
+## Opening and promise, when appropriate
+
+- Viewer promise:
+- Working title / poster or thumbnail concept:
+- Chosen opening and why it fits:
+- Evidence or artifact visible near the opening:
+- Scene that explicitly delivers the promise:
+
+| Candidate | Hook category | Opening words | First visual | Evidence/source IDs | Payoff scene | Decision / limitation |
+|---|---|---|---|---|---|---|
+| A | | | | | | |
+
 ## Script and scene map
 | Scene | Purpose / duration | Spoken copy | Visual and audio plan | Source IDs | On-screen text / attribution |
 |---|---|---|---|---|---|

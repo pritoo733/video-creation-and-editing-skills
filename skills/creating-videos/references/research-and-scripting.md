@@ -17,6 +17,8 @@ Research depth should match the video's claims and audience. Do not add research
 
 Write a one-line premise, a viewer promise, and the intended ending before drafting. Choose a structure that fits the mode: opening hook, setup, ordered explanation or story beats, transitions, payoff, and next step. Personal stories can use chronological, thematic, or memory-based structure; preserve what the owner actually shared.
 
+For audience-led explainers, promos, tutorials, and social/channel work, use [audience, hooks, and retention](audience-hooks-and-retention.md). Consider appropriate alternatives from its 21 hook categories, plan the title/poster/opening together, and map the selected promise to a concrete payoff with available evidence. Preserve the owner's writing voice and audio-speaker preference. Do not select an opening merely because a keyword-based score is high.
+
 For every scene, record:
 
 - scene purpose and target duration

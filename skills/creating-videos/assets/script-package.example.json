@@ -1,0 +1,29 @@
+{
+  "audience": "People making an original animated explainer without camera footage",
+  "viewer_promise": "Understand how one visual object can connect several animated scenes",
+  "title": "Build a connected motion graphic without stock footage",
+  "thumbnail_text": "SHAPE INTO STORY",
+  "duration": 45,
+  "spoken_wpm": 150,
+  "hook_window_seconds": 8,
+  "selected_hook_id": "reveal",
+  "sources": {
+    "study": {
+      "path": "motion-starter/index.html",
+      "reviewed": true,
+      "supports": "The authored study contains an evolving contour, a connector path, and a layered illustration.",
+      "limitation": "This is an illustrative production plan, not a completed 45-second film or evidence of audience results."
+    }
+  },
+  "hooks": [
+    {"id":"reveal","formula_id":"the-reveal","text":"Watch one shape become a path, then a picture. Here is how those scenes connect.","opening_visual":"Show the actual contour changing into its next state.","payoff_beat_id":"walkthrough","evidence_ids":["study"]},
+    {"id":"question","formula_id":"the-question","text":"How can a video tell a connected story without camera footage?","opening_visual":"Follow the same outline as its role changes.","payoff_beat_id":"walkthrough","evidence_ids":["study"]},
+    {"id":"audience","formula_id":"the-direct-address","text":"If you make animated explainers, give your viewer one visible action to follow.","opening_visual":"Highlight the evolving contour as the shared visual anchor.","payoff_beat_id":"walkthrough","evidence_ids":["study"]}
+  ],
+  "beats": [
+    {"id":"opening","start":0,"end":8,"narration":"Watch one shape become a path, then a picture. Here is how those scenes connect.","visual_action":"Capture the original study's contour moving between its first two states."},
+    {"id":"demonstration","start":8,"end":18,"narration":"The outline stays familiar while its job changes. It first gathers an idea, then frames a connected path.","visual_action":"Show the source animation and briefly identify the persistent outline."},
+    {"id":"walkthrough","start":18,"end":32,"narration":"Both scenes share a boundary shape. Matching their outgoing and incoming states lets one scene grow into the next.","visual_action":"Inspect the actual boundary frames and the corresponding source geometry.","delivers":"Show how the real authored study connects scenes through shared geometry."},
+    {"id":"close","start":32,"end":45,"narration":"Use that principle with artwork that fits your own subject. Then inspect the handoff and leave enough time to understand each idea.","visual_action":"Return to the source animation, hold the illustration, and end on the completed mark."}
+  ]
+}
