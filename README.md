@@ -51,6 +51,8 @@ Then ask your LLM to research a topic and audience, create a varied narration-ma
 .\.video-tools\Scripts\python.exe skills\creating-videos\scripts\auto_produce.py path\to\plan.json --output path\to\project\output --runtime .video-tools\runtime.json
 ```
 
+For a visual checkpoint before the final encode, add `--draft-only`. The workflow writes a portable `storyboard.html` with each shot preview beside its narration, intent, source, and license. Review and revise the plan, then rerun without that flag. This adopts OpenMontage's useful scene-board and staged-production ideas while keeping this route local and free: no paid generation provider, paid stock library, or paid API is used. The full run also records its stages and errors in `production-log.json`.
+
 Inspect the output contact sheet, clip previews, source/license evidence, full video, captions, and review report. The route can only use suitable public media it can find, and does not clear personality, property, trademark, or factual claims automatically. A completed encode is not a completed creative review. Setup and the initial local speech-recognition model require an internet connection; production runs locally afterward. Package, voice, and footage licenses still apply. No output-quality guarantee can replace editorial review.
 
 ## Install in an agent

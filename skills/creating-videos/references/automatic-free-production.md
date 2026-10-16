@@ -13,6 +13,8 @@ Use this route when the user has an idea, topic, or brief but no footage, and ha
 
 It does not use a hosted video-generation API, paid stock account, or paid TTS service. It cannot manufacture documentary evidence, product UI, testimonials, or genuine camera footage. Original diagrams are illustrative. Online source search and the initial Whisper model download require internet access; rendering and speech are local. The first model downloads use disk space and CPU time. Results depend on suitable public media being available, hardware, research quality, and human review. No API cost does not mean that each asset has no obligations: distribute required CC BY credit and check privacy, trademark, property, and other rights that the file license does not clear.
 
+This route adapts useful production ideas from [OpenMontage](https://github.com/calesthio/OpenMontage)—a planned pipeline, inspectable scene board, and auditable run record—to a no-paid-service setup. It does not copy OpenMontage source code, call its provider integrations, or require its React/Remotion, cloud, or API-key paths. OpenMontage documents its zero-key stock/open-archive route separately from examples that use paid generation; this workflow stays on local tools and allowlisted free media.
+
 ## Install once
 
 From the repository root, Python 3.10 or later is required. Windows PowerShell:
@@ -36,6 +38,14 @@ Setup creates a local virtual environment and fetches the listed open-source pac
 Tell the LLM: “Create a video about [topic] for [audience], [purpose], [length and format], with no supplied footage. Use only free tools and appropriately licensed media. Research factual claims, write and revise the narration, build a varied shot plan, run the automatic-free workflow, inspect the contact sheet and captions, fix mismatches, and report any unavailable visual.” Do not ask the user to write JSON. The LLM should turn the approved brief into `plan.json`, using the example as a schema reference. Confirm any unresolved factual claims before rendering.
 
 Copy [`../../../examples/automatic-free/plan.json`](../../../examples/automatic-free/plan.json) and replace its sample subject, narration, source-backed claims, and shot choices. Each narration beat contains one to four short visual actions. Each visual must explain why it supports that exact spoken line. Use distinct relevant scenes; use a process graphic for an abstract sequence; use a chart only for checked data and cite its source. Match shot duration to the spoken beat. Add `source_in` only when a reviewed clip interval needs a deliberate trim. Use a stock query specific to visible content, not broad mood terms. An empty search or insufficient clip duration is a sourcing gap: revise the query, use a truthful original graphic, or tell the user; do not silently substitute unrelated media.
+
+For an explicit visual checkpoint, collect assets and build the board first:
+
+```powershell
+.\.video-tools\Scripts\python.exe skills\creating-videos\scripts\auto_produce.py path\to\plan.json --output path\to\project\output --runtime .video-tools\runtime.json --draft-only
+```
+
+Open `storyboard.html`. It pairs each shot preview with the exact narration beat, the reason for the choice, and the source/license links. If a visual is weak, revise the plan and regenerate the board. After review, run the regular command below to render. This checkpoint is optional; omit `--draft-only` when you want the workflow to continue through final rendering automatically.
 
 Run from the repository root:
 
@@ -64,6 +74,6 @@ The renderer validates timing and decodability, but software checks cannot judge
 
 ## Inputs and outputs
 
-Plan schema and a worked sample: [`../../../examples/automatic-free/plan.json`](../../../examples/automatic-free/plan.json). The output is a project folder containing `final.mp4`, `editable.otio`, `timeline.json`, `audio-tracks.json`, `captions.srt`, `captions.ass`, `transcript.json`, `CREDITS.md`, `review-contact-sheet.jpg`, `candidate-log.json`, and local working sources/evidence. Treat the edit manifest and separate audio sources as the practical editable source of truth; OTIO notes that caption rendering and mix automation need reconstruction in an external editor.
+Plan schema and a worked sample: [`../../../examples/automatic-free/plan.json`](../../../examples/automatic-free/plan.json). The output is a project folder containing `final.mp4`, `editable.otio`, `timeline.json`, `audio-tracks.json`, `captions.srt`, `captions.ass`, `transcript.json`, `CREDITS.md`, `storyboard.html`, `storyboard.json`, `production-log.json`, `review-contact-sheet.jpg`, `candidate-log.json`, and local working sources/evidence. The log records production stages and failures. Treat the edit manifest and separate audio sources as the practical editable source of truth; OTIO notes that caption rendering and mix automation need reconstruction in an external editor.
 
 For higher control or non-English work, keep this workflow's evidence, narration, and timing checks, then use a compatible local editor or other free tools. Check current tool licensing and hardware demands before installing optional systems. Paid hosted generation is outside this route.

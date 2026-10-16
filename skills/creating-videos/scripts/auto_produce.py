@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 import wave
+from storyboard import write_storyboard
 
 from free_media import search, rank, download
 
@@ -56,6 +57,13 @@ def run(command, **kwargs):
         detail=result.stderr.decode(errors='replace') if isinstance(result.stderr,bytes) else result.stderr
         raise RuntimeError(detail[-1800:])
     return result
+
+
+def record_stage(output, stage, status, details=None):
+    path=Path(output)/'production-log.json'
+    entries=json.loads(path.read_text(encoding='utf-8')) if path.exists() else []
+    entries.append(dict(time=datetime.now(timezone.utc).isoformat(),stage=stage,status=status,details=details or {}))
+    path.write_text(json.dumps(entries,indent=2),encoding='utf-8')
 
 
 def voice_duration(path):
@@ -173,12 +181,14 @@ def export_timeline(shots,tracks,fps,path):
     otio.adapters.write_to_file(timeline,str(path))
 
 
-def produce(plan,output,runtime):
+def produce(plan,output,runtime,draft_only=False):
     import cv2
     import imagehash
     from PIL import Image, ImageDraw
     from motion_graphics import render as render_graphic
     w,h,fps=validate_plan(plan); output=Path(output).resolve(); output.mkdir(parents=True,exist_ok=True)
+    (output/'production-log.json').write_text('[]',encoding='utf-8')
+    record_stage(output,'production_started','running',dict(brief=plan['brief'],paid_services=[]))
     ffmpeg=runtime['ffmpeg']; model=Path(runtime['voice']).resolve()
     if not model.is_file() or not Path(str(model)+'.json').is_file():
         raise ValueError('Run setup_free_tools.py first; a local voice and configuration are required')
@@ -186,6 +196,7 @@ def produce(plan,output,runtime):
     work=output/'working'; work.mkdir(exist_ok=True)
     shots=[]; tracks=[]; rows=[]; assets=[]; used=set(); hashes=[]; cursor=0; candidate_log=[]
     for bi,beat in enumerate(plan['beats']):
+        record_stage(output,'narration','running',dict(beat=bi+1,total_beats=len(plan['beats'])))
         print(f'BEAT {bi+1}/{len(plan["beats"])}: local narration',flush=True)
         key=hashlib.sha256((beat['narration']+str(model.stat().st_mtime_ns)).encode()).hexdigest()[:16]
         audio=work/(key+'.wav')
@@ -217,7 +228,8 @@ def produce(plan,output,runtime):
                         if not isinstance(source_in,(int,float)) or not math.isfinite(source_in) or source_in<0 or source_in+shot_duration>asset['duration']:
                             raise ValueError('The selected source interval exceeds the clip')
                         image=preview(ffmpeg,asset['local_path'],source_in+shot_duration/2)
-                        image.save(work/'media'/(asset['id']+'-preview.jpg'),quality=90)
+                        preview_path=work/'media'/(asset['id']+'-preview.jpg')
+                        image.save(preview_path,quality=90)
                         fingerprint=imagehash.phash(image)
                         if any(fingerprint-previous<=4 for previous in hashes):
                             raise ValueError('Near-duplicate visual already selected')
@@ -232,22 +244,42 @@ def produce(plan,output,runtime):
                 rights=dict(source_url=selected['page'],license_url=selected['license_url'],checked_on=selected['checked_on'],
                             evidence=selected['evidence_path'],status='metadata-checked',verification_method='commons-api-license-allowlist-v1',
                             intended_use='Edited illustrative context; not a product feature, endorsement, or customer result')
-                shot=dict(common,path=selected['local_path'],type='video',kind='stock',source_id='commons:'+selected['id'],rights=rights,**{'in':source_in})
+                shot=dict(common,path=selected['local_path'],type='video',kind='stock',source_id='commons:'+selected['id'],rights=rights,
+                          preview_path=str(preview_path),asset_title=selected['title'],asset_license=selected['license'],**{'in':source_in})
             else:
                 path=work/(sid+'.mp4')
                 render_graphic(visual,shot_duration,w,h,fps,path,ffmpeg,plan.get('palette'))
-                shot=dict(common,path=str(path),type='video',kind='original',source_id='original:'+sid)
+                preview_path=work/(sid+'-preview.jpg')
+                preview(ffmpeg,str(path),shot_duration*.65).save(preview_path,quality=90)
+                shot=dict(common,path=str(path),type='video',kind='original',source_id='original:'+sid,preview_path=str(preview_path))
                 shot.update(visual_state_changes=len(visual['labels']),reading_reason='Progressive diagram/chart states follow the spoken explanation without a disruptive cut')
                 if len(visuals)==1:
                     shot['content_type']='interface' if visual.get('content_type')=='interface' else 'graphic'
             shots.append(shot)
         cursor+=duration
+        record_stage(output,'beat_complete','complete',dict(beat=bi+1,total_beats=len(plan['beats']),elapsed_seconds=cursor))
+    (output/'candidate-log.json').write_text(json.dumps(candidate_log,indent=2),encoding='utf-8')
+    credits=['# Media credits','Include these credits with distribution. Clips were trimmed/reframed and combined with narration/captions.','']
+    for asset in assets:
+        credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
+    credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.',
+              'Generated process/chart graphics and optional harmonic bed: original procedural output.']
+    (output/'CREDITS.md').write_text('\n'.join(credits)+'\n',encoding='utf-8')
+    board_path=write_storyboard(plan,shots,output)
     footage_fraction=sum(s['duration'] for s in shots if s['kind']=='stock')/cursor
+    record_stage(output,'storyboard_ready','ready_for_review',dict(path=board_path,shots=len(shots),footage_fraction=footage_fraction))
+    if draft_only:
+        report=dict(status='draft',storyboard=board_path,shots=len(shots),duration=cursor,paid_services=[],
+                    next_step='Review storyboard.html and revise plan.json; run without --draft-only to render the final video.')
+        record_stage(output,'draft_only_complete','ready_for_review',report)
+        (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+        print(json.dumps(report,indent=2)); return report
     if plan.get('treatment','mixed')=='footage-led' and footage_fraction<.5:
         raise ValueError('A footage-led brief needs at least half its runtime from relevant actual footage')
     if plan.get('music')=='original-ambient':
         bed=work/'original-ambient.wav'; ambient_bed(bed,cursor)
         tracks.append(dict(path=str(bed),role='music',start=0,duration=cursor,gain_db=-20))
+    record_stage(output,'audio_mix','running',dict(tracks=len(tracks),duration=cursor))
     editing_module('mix_audio').mix(tracks,cursor,work/'mix.wav',ffmpeg)
     print('CHECK: local speech transcription and caption timing',flush=True)
     aligned,differences=aligned_captions(ffmpeg,work/'mix.wav',' '.join(beat['narration'] for beat in plan['beats']),output)
@@ -257,26 +289,22 @@ def produce(plan,output,runtime):
     else:
         caption_method='measured sentence audio; estimated word groups retained because ASR disagreed; review required'
     write_captions(rows,output,w,h)
+    record_stage(output,'captions_checked','complete',dict(method=caption_method,differences=len(differences)))
     timeline=dict(format=dict(width=w,height=h,fps=fps),expected_duration=cursor,audio=str(work/'mix.wav'),captions=str(output/'captions.ass'),shots=shots)
     audit=editing_module('audit_visual_sequence'); errors,warnings=audit.audit(timeline)
     if errors:
         raise ValueError('Visual sequence needs revision: '+str(errors))
     (output/'timeline.json').write_text(json.dumps(timeline,indent=2),encoding='utf-8')
     (output/'audio-tracks.json').write_text(json.dumps(dict(duration=cursor,tracks=tracks),indent=2),encoding='utf-8')
-    (output/'candidate-log.json').write_text(json.dumps(candidate_log,indent=2),encoding='utf-8')
-    credits=['# Media credits','Include these credits with distribution. Clips were trimmed/reframed and combined with narration/captions.','']
-    for asset in assets:
-        credits.append(f'- {asset["title"]} — {asset["author"]}; {asset["page"]}; {asset["license"]}: {asset["license_url"]}')
-    credits+=['','Voice: Piper en_US-ljspeech-high; public-domain LJ Speech dataset. See the runtime model card.',
-              'Generated process/chart graphics and optional harmonic bed: original procedural output.']
-    (output/'CREDITS.md').write_text('\n'.join(credits)+'\n',encoding='utf-8')
     final=output/'final.mp4'
+    record_stage(output,'final_render','running',dict(shots=len(shots),format=f'{w}x{h}@{fps}'))
     editing_module('compose_video').render(timeline,output,final,work/'render',ffmpeg)
     export_timeline(shots,tracks,fps,output/'editable.otio')
     run([ffmpeg,'-hide_banner','-loglevel','error','-xerror','-i',final,'-f','null','-'])
     cap=cv2.VideoCapture(str(final)); actual=dict(width=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),height=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),frames=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)),fps=cap.get(cv2.CAP_PROP_FPS)); cap.release()
     if (actual['width'],actual['height'],actual['frames'])!=(w,h,round(cursor*fps)) or abs(actual['fps']-fps)>.01:
         raise RuntimeError('Final stream dimensions, frame count, or cadence do not match the plan')
+    record_stage(output,'technical_validation','complete',dict(full_decode=True,streams=actual,duration=cursor))
     thumbs=[]; elapsed=0
     for shot in shots:
         for fraction in (.05,.5,.95):
@@ -287,11 +315,12 @@ def produce(plan,output,runtime):
     for i,(label,im) in enumerate(thumbs):
         im.thumbnail((470,264)); x=(i%3)*480; y=(i//3)*300; sheet.paste(im,(x,y)); draw.text((x+5,y+270),label,fill='white')
     sheet.save(output/'review-contact-sheet.jpg',quality=92)
-    report=dict(full_decode=True,streams=actual,duration=cursor,shots=len(shots),unique_stock_sources=len(used),
+    report=dict(status='ready_for_creative_review',full_decode=True,streams=actual,duration=cursor,shots=len(shots),unique_stock_sources=len(used),
                 footage_fraction=footage_fraction,caption_timing=caption_method,narration_differences=differences,
                 license_check='Commons metadata allowlist with saved evidence; personality/property rights and visual relevance need review',
                 creative_review='pending: agent must inspect source/action fit, contact sheet, motion, narration and captions',
                 warnings=warnings,paid_services=[],sha256=hashlib.sha256(final.read_bytes()).hexdigest())
+    record_stage(output,'production_complete','ready_for_creative_review',dict(output=str(final),storyboard=board_path,sha256=report['sha256']))
     (output/'review.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps(report,indent=2)); return report
 
@@ -300,10 +329,12 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan',type=Path); parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--runtime',type=Path,required=True)
+    parser.add_argument('--draft-only',action='store_true',help='Collect assets and create a reviewable storyboard without rendering the final video')
     args=parser.parse_args()
     try:
-        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')))
+        produce(json.loads(args.plan.read_text(encoding='utf-8-sig')),args.output,json.loads(args.runtime.read_text(encoding='utf-8-sig')),args.draft_only)
     except Exception as exc:
         args.output.mkdir(parents=True,exist_ok=True)
+        record_stage(args.output,'production_failed','failed',dict(error=str(exc)))
         (args.output/'review.json').write_text(json.dumps(dict(status='failed',error=str(exc)),indent=2),encoding='utf-8')
         raise
