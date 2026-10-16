@@ -330,7 +330,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
             raise ValueError('Pocket TTS is not installed in this runtime; rerun setup_free_tools.py --tts-engine pocket') from exc
         print('Loading Pocket TTS model and voice; first run may download weights from Hugging Face.',flush=True)
         pocket_model=TTSModel.load_model()
-        pocket_voice_state=pocket_model.get_state_for_audio_prompt(runtime.get('pocket_voice','bill_boerst'))
+        pocket_voice_state=pocket_model.get_state_for_audio_prompt(runtime.get('pocket_voice','alba'))
     else:
         raise ValueError(f'Unsupported local TTS engine: {tts_engine}')
     (output/'plan.json').write_text(json.dumps(plan,indent=2),encoding='utf-8')
@@ -339,7 +339,7 @@ def produce(plan,output,runtime,draft_only=False,project_root=None):
     for bi,beat in enumerate(plan['beats']):
         record_stage(output,'narration','running',dict(beat=bi+1,total_beats=len(plan['beats'])))
         print(f'BEAT {bi+1}/{len(plan["beats"])}: local narration',flush=True)
-        voice_key=(runtime.get('pocket_voice','bill_boerst') if tts_engine=='pocket' else str(model.stat().st_mtime_ns))
+        voice_key=(runtime.get('pocket_voice','alba') if tts_engine=='pocket' else str(model.stat().st_mtime_ns))
         key=hashlib.sha256((beat['narration']+tts_engine+str(voice_key)).encode()).hexdigest()[:16]
         audio=work/(key+'.wav')
         if not audio.exists():

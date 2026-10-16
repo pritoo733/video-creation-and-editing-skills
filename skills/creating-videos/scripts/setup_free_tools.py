@@ -38,7 +38,7 @@ POCKET_LICENSES = 'https://huggingface.co/kyutai/tts-voices'
 POCKET_MODEL = 'https://huggingface.co/kyutai/pocket-tts'
 
 
-def setup(destination, reuse_voice=None, tts_engine='pocket', pocket_voice='bill_boerst'):
+def setup(destination, reuse_voice=None, tts_engine='pocket', pocket_voice='alba'):
     if tts_engine not in ('piper', 'pocket'):
         raise ValueError('tts_engine must be piper or pocket')
     if pocket_voice not in POCKET_VOICES:
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('--reuse-voice', type=Path, help='Existing en_US-ljspeech-high model; its matching .json is required')
     parser.add_argument('--tts-engine', choices=('piper', 'pocket'), default='pocket',
                         help='Local speech backend; Pocket TTS is the default and downloads its model on first use')
-    parser.add_argument('--pocket-voice', choices=tuple(POCKET_VOICES), default='bill_boerst',
+    parser.add_argument('--pocket-voice', choices=tuple(POCKET_VOICES), default='alba',
                         help='Pocket TTS voice preset; check its dataset license before publishing')
     args = parser.parse_args()
     setup(args.dest, args.reuse_voice, args.tts_engine, args.pocket_voice)
