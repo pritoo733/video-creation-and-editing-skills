@@ -6,6 +6,8 @@ The lightweight automatic-free renderer offers four useful diagram layouts. It i
 
 ## Direct the film before animating it
 
+When a visual direction is not yet established, use [the reference library](reference-library-workflow.md) to retrieve relevant public prompts and examples. Extract their motion mechanisms, adapt them into a complete production prompt for this subject, and retain source/creator links. Avoid restarting an approved treatment merely to follow a fashionable reference.
+
 Choose a concrete audience, viewer takeaway, and visual idea. Write a treatment specific to the subject: typography, a small palette, texture, framing, motion behavior, and sound character. For a product, inspect its actual interface and assets; plan a real action and its result. Code-generated artwork is appropriate for an abstract idea, but it must not masquerade as a working feature or captured evidence.
 
 Design the opening as a finished composition with something worth seeing immediately. Empty logo padding, generic promises, and a slow title reveal rarely explain the subject. A tutorial may need a calmer introduction; preserve the user's intended pacing.

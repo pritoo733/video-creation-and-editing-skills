@@ -21,6 +21,10 @@ class InstallationChecks(unittest.TestCase):
             checked=subprocess.run([sys.executable,str(dest/'creating-videos/scripts/hook_workbench.py'),str(dest/'creating-videos/assets/script-package.example.json')],cwd=tmp,capture_output=True,text=True)
             self.assertEqual(checked.returncode,0,checked.stderr)
             self.assertEqual(json.loads(checked.stdout)['status'],'editorial_review_required')
+            self.assertTrue((dest/'creating-videos/scripts/reference_library.py').is_file())
+            library_ref=dest/'creating-videos/references/reference-library-workflow.md'
+            self.assertIn('../assets/templates/reference-treatment.md',library_ref.read_text(encoding='utf-8'))
+            self.assertTrue((library_ref.parent/'../assets/templates/reference-treatment.md').resolve().is_file())
             with self.assertRaisesRegex(ValueError,'already exists'):installer.install(ROOT,dest)
             installer.install(ROOT,dest,update=True)
 

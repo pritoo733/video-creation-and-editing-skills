@@ -13,5 +13,8 @@ Create one project-local copy for a motion pattern worth reusing. Describe the t
 - **Tools or implementation notes:**
 - **Known limitations and failure cases:**
 - **Preview/reference source and usage rights:**
+- **Collection revision / cache hash and original creator links:**
+- **Prompt adaptations and replaced dependencies/assets:**
+- **Observation method (prompt only, sampled frames, playback, sound):**
 - **Project(s) where reviewed:**
 - **Review evidence and accepted changes:**

@@ -11,6 +11,7 @@ Own the full lifecycle: research when needed, concept and script, source and cre
 - Audience-led explainers, promos, channel videos, strong openings, title/thumbnail planning, Shorts, or learning from retention: [audience, hooks, and retention](references/audience-hooks-and-retention.md). Use its 21-category library to consider suitable openings and connect the chosen promise to actual visual proof and a script payoff; the local workbench checks plan structure without predicting popularity.
 - Supplied footage to recap, adapt, or dub: [source-based video](references/source-based-video.md).
 - Supplied reference video to analyze: [reference-video analysis](references/reference-video-analysis.md).
+- Find reusable visual concepts or adapt public motion prompts: [reference library workflow](references/reference-library-workflow.md). Search the local collection snapshot, inspect a relevant prompt and accessible examples, then write a treatment for this subject before rendering. Use it when no suitable visual direction is established; keep approved creative choices primary.
 - Presenter or talking head: [presenter workflow](references/presenter-workflow.md).
 - App or website walkthrough: [app-capture guide](references/app-capture.md), including fixed-scale UI framing and readable scroll captures.
 - Animation, generated visuals, or a motion-led treatment: [creative modes](references/creative-modes.md) and [visual direction](references/visual-direction.md).

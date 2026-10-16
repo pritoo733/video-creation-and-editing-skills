@@ -2,6 +2,8 @@
 
 Use this when the user supplies a video they like or asks for a new work inspired by a reference. The goal is to understand what makes it effective and transform those techniques for a new subject, audience, and brand.
 
+For a public prompt/example collection, use [the reference library workflow](reference-library-workflow.md) to search, preserve provenance, inspect prompt completeness and dependencies, and turn suitable references into a renderable new treatment.
+
 ## Inspect before proposing
 
 Confirm the reference is accessible and authorized for analysis. Watch it once for its overall effect. Then inspect the transcript, scene boundaries, representative frames, edit points, and audio where tools allow. Record the observation method and note any inaccessible portions.
@@ -30,7 +32,7 @@ Give the user two or three meaningfully different directions when the choice aff
 - estimated duration, cost, and meaningful uncertainty when tool pricing applies;
 - a small sample to review before scaling production.
 
-Use the reference as analysis material, not as a source to copy. Do not reuse its footage, music, artwork, brand assets, exact script, or distinctive complete expression without permission. Do not imitate a living creator's signature style. Capture transferable principles and develop a distinct treatment. Keep reference screenshots or excerpts only when permitted, and record their origin and usage limits.
+Adapt transferable design principles into a treatment appropriate to the new subject. Reuse prompt text, source code, or other components when their applicable license or permission allows it, retaining required notices and creator attribution. Check the rights for linked footage, music, artwork, brand assets, and scripts separately from the collection's license. Record source origins and usage limits for any retained material.
 
 ## Optional fidelity work
 
