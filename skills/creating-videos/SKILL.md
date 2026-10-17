@@ -25,7 +25,7 @@ Own the full lifecycle: research when needed, concept and script, source and cre
 
 For promos, social ads, and other footage-friendly videos, prefer a footage-led or mixed visual plan: use verified free clips for real-world actions and environments, real product captures for product behavior, and original graphics for abstract ideas that camera footage cannot explain. Each clip query must name a concrete subject and action tied to its narration beat. Reject clips that only share a keyword or mood; do not fill a gap with generic stock.
 
-Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for post-production. When the user only wants changes to an already assembled video, start with the editing skill instead.
+Post-production is a required creative stage: complete the picture edit, motivated transitions, motion graphics, final-audio captions, licensed music and purposeful sound design, color consistency, export, and review pass in [the production workflow](references/production-workflow.md#6-edit-review-and-deliver). Use [the editing skill](../editing-videos/SKILL.md) and its review checklist for editing details. When the user only wants changes to an already assembled video, start with the editing skill instead.
 
 Check the available browser, research, capture, audio, editing, and rendering tools early. Choose a feasible route based on actual access and capability. Continue useful stages if a tool is missing; clearly state the blocker and provide the best available deliverable without claiming that an uncreated video is finished.
 

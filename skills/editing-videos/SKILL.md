@@ -11,6 +11,8 @@ For a footage-led timeline with local media, use [shot composition](references/s
 
 For supplied raw clips, interviews, or talking heads, read the [footage-first edit workflow](references/raw-footage-workflow.md), including the EDL and boundary-review gate. For subtitles, read the [caption workflow](references/caption-workflow.md) and correct word timing against the final audio before delivery.
 
+When a user asks for a cinematic, motion-led, or reference-inspired edit of supplied footage, also read [cinematic motion editing](references/cinematic-motion-editing.md). Use it to connect the footage, narration, typography, graphics, transitions, and sound into one subject-specific treatment; do not turn the source into unrelated B-roll or a sequence of animated title cards.
+
 For website or app shots, use [interface motion](references/interface-motion.md): preserve readable full-width framing, start at a fixed scale, and reveal relevant content with a paced browser scroll or a scrolling full-page capture. Ordinary screenshots should not receive an automatic zoom treatment.
 
 ## Edit contract
