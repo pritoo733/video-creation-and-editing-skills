@@ -10,20 +10,6 @@ This guide extends the [footage-first edit workflow](raw-footage-workflow.md), [
 - If the user gives a visual reference, describe its transferable mechanisms (such as recurring motifs, kinetic type, scene changes, contrast, or transitions). Do not copy its characters, artwork, composition, script, or distinctive frame sequence. Apply those mechanisms to the user's subject and brand.
 - State the practical limits before committing to an effect: available footage, aspect ratio, local renderer/editor capability, compute time, and any stock or generative source permissions. Prefer local/free methods when they meet the brief. Never imply Google Flow, stock search, a paid API, or advanced tracking/rotoscoping is available unless it is actually connected and authorized.
 
-### Choose a treatment that fits the reference
-
-Do not equate “cinematic” with “more effects.” Identify the reference's editing mode first, then borrow only its general principles:
-
-| Editing mode | Build the energy from | Keep restrained |
-| --- | --- | --- |
-| Music-led personal or travel montage | A visual progression across real moments and places; a recurring person or object; a deliberate mix of wide establishing views, medium portraits, movement, and close details; natural light and location changes | Explanatory copy, artificial transitions, and cuts on every beat |
-| Kinetic-type explainer or promo | Spoken-story turns, concise display words, a coherent motif, custom graphic states, and transitions that carry an idea | Full-sentence text cards, unrelated inserts, and effects without a story function |
-| Hybrid editorial film | Real scenes for evidence and emotion, with designed graphics only where they clarify or connect the story | A permanent overlay layer that competes with the source |
-
-For a music-led montage, build an emotional arc from footage the viewer can recognize: establish a place, show a person interacting with it, vary to a closer detail or gesture, then let a later location or expression move the feeling forward. Keep enough of each shot to register its action. Use song phrases, accents, or changes in energy as editing options, not a metronome; a held landscape or quiet look may be stronger than another cut. Match exposure and color gently across phone clips while preserving the differences that make each place feel real. Captions are optional unless the message or accessibility requires them.
-
-The user-provided [Instagram Reel reference](https://www.instagram.com/reel/Cj0txK4JvCM/) was visually sampled in Chrome on 2026-10-17. The observed frames include a recurring person across waterfall and landscape views, a flower close-up, indoor portrait framing, and a night street scene. This supports the music-led montage guidance above; it does not prove the complete edit, exact cut timing, or soundtrack sound, which was not audible to this review. Treat that observation as one example, not a template to copy.
-
 ## 2. Write one visual treatment
 
 Before styling the whole timeline, define a one-page treatment:
@@ -31,8 +17,8 @@ Before styling the whole timeline, define a one-page treatment:
 | Decision | Choose |
 | --- | --- |
 | Viewer takeaway | One sentence the edit should leave with the viewer |
-| Visual metaphor or motif (optional) | A meaningful object, shape, gesture, or graphic state that can evolve with the story, when useful |
-| Type system (optional) | A clear hierarchy and caption treatment only if the video needs designed on-screen words |
+| Visual metaphor or motif | A meaningful object, shape, gesture, or graphic state that can evolve with the story |
+| Type system | One display face and one readable supporting face, with a clear hierarchy and caption treatment |
 | Palette and texture | A small, subject-appropriate set of colors and a restrained surface treatment |
 | Motion grammar | A few repeatable moves (for example, follow, reveal, pass-through, scale settle, or match move) and their easing |
 | Sound character | Dialogue-forward mix, musical energy, ambience, and a small set of motivated effects |
@@ -41,7 +27,7 @@ Choose visual language for this story rather than applying a default “viral”
 
 ## 3. Map the words to changing visuals
 
-Create a visual beat sheet before adding polish. For narration-led work, map each important line or story beat; for a music-led montage, map each meaningful picture or musical event. Record its time, phrase/event, purpose, source shot/action, added graphic or insert if needed, motion, transition into the next beat, and why that visual fits. Cover the opening and each important story turn; include proof and a call to action when the format calls for them. Do not force one visual per sentence or musical beat: a clear action can span several lines, while a long line or emotional turn may need more than one visual change.
+Create a visual beat sheet before adding polish. For each important line or story beat, record its time, exact phrase or idea, purpose, source shot/action, added graphic or insert if needed, motion, transition into the next beat, and why that visual fits. Cover the opening, each story turn, proof or demonstration, and the call to action. Do not force one visual per sentence: a clear action can span several lines, while a long line may need more than one visual change.
 
 Use this priority order for each beat:
 
@@ -64,16 +50,16 @@ For supported local timelines, capture each planned visual as its own meaningful
 
 ## 5. Prove the treatment in a representative pilot
 
-Before applying a new treatment everywhere, cut and render a representative 6–12 second passage that includes real footage and the treatment's primary driver—speech, music, or both. Include the visual changes, typography, graphics, transitions, and sound elements the treatment actually calls for; do not add an element merely to satisfy a checklist. Choose a passage that tests the hardest part of the brief, not merely the easiest opening shot.
+Before applying a new treatment everywhere, cut and render a representative 6–12 second passage that includes real footage, speech, at least one meaningful visual change, the intended typography/graphics, a transition, and the proposed sound balance. Choose a passage that tests the hardest part of the brief, not merely the easiest title card.
 
 Review at the actual destination size and normal playback speed. Ask:
 
-- Can the viewer follow the story or mood at normal speed? If narration is present, does each visual support what is being said?
+- Can the viewer understand the spoken idea and the visual relationship without pausing?
 - Does the sequence show real source action as well as designed elements, where useful footage exists?
-- Does every insert, word, movement, and sound support this beat? Are optional elements omitted when they do not help?
-- If designed text is used, is it readable, correctly timed, within safe areas, and clear over the image?
-- If a motif or transition is used, does it evolve or connect the outgoing and incoming thought? Would a clean cut or no added graphic serve better?
-- Are the focal person, action, and intended meaning preserved? If dialogue is present, does the mix keep it clear?
+- Does every insert, word, movement, and sound support this beat?
+- Is the type readable, correctly timed, in safe areas, and clear over the image?
+- Does the motif evolve, and does each transition connect the outgoing and incoming thought?
+- Are the speaker's face and meaning preserved? Does the mix keep dialogue clear?
 - Does it feel purpose-built for this subject, or like a reusable template with changed text?
 
 Revise the treatment if any answer exposes a problem; do not propagate a weak pilot. Once approved, apply the visual system across the edit while varying shot choices and composition to fit each beat. Review the whole encoded video with sound and use the existing delivery gate. Preserve the source, beat sheet, timeline/edit data, rights evidence, and review notes so the result can be revised.
