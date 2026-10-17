@@ -1,12 +1,49 @@
-# All-Purpose Video Production Skills for Any LLM
+# Video, from first idea to final cut
 
-![Video production journey from research and storyboards through creative editing to a reviewed final cut](assets/video-workflow-hero.png)
+![A video team moving from research and storyboards through editing to a reviewed final cut](assets/video-workflow-hero.png)
 
-**Repository:** [github.com/pritoo733/video-creation-and-editing-skills](https://github.com/pritoo733/video-creation-and-editing-skills)
+**Research. Write. Make. Edit. Review. Deliver.**
 
-Reusable, LLM-provider-neutral skills for the full video lifecycle: research, concept development, scripting, asset preparation, video creation, editing, quality review, and delivery. They support personal stories, explainers, product demos, marketing pieces, social clips, events, footage recuts, motion graphics, and AI-assisted video.
+Open, reusable video-production skills for **any LLM that can load Agent Skills**. Build a workflow around the story you want to tell, the tools you have, and the rights you can verify.
 
-The skills follow the open [Agent Skills format](https://agentskills.io/specification): a folder with a `SKILL.md` file and optional references or templates. They work directly in agent products that load this format. Other LLM setups can use them by adding the relevant `SKILL.md` and referenced files to the model's instructions/context. The skills do not depend on a specific model provider; access to browsing, editing, voice, and video-generation tools depends on the host environment.
+**Make new videos** · **Edit existing footage** · **Create motion graphics** · **Produce promos, explainers, tutorials, recaps, and social videos**
+
+[Get started](#get-started) · [Choose a workflow](#choose-a-workflow) · [Automatic local production](#create-a-video-with-no-supplied-footage-and-no-paid-services) · [Production Desk](#view-your-generated-videos-in-the-local-dashboard)
+
+> The skills guide the creative workflow; your LLM and local environment provide the tools. Browsing, stock access, voice services, video generation, and rendering depend on what is installed and authorized. This project does not promise automatic quality or viral results.
+
+## Get started
+
+Clone the repository, install the skills for your agent, and give it a brief. You can also open either skill's `SKILL.md` directly and add it to an LLM that supports custom instructions.
+
+```powershell
+git clone https://github.com/pritoo733/video-creation-and-editing-skills.git
+cd video-creation-and-editing-skills
+python scripts/install_skills.py --dest 'YOUR_AGENT_SKILLS_DIRECTORY'
+```
+
+Install the optional free local runtime when you want to create and render videos on your computer:
+
+```powershell
+python skills/creating-videos/scripts/setup_free_tools.py --dest .video-tools
+python skills/creating-videos/scripts/doctor_free_tools.py .video-tools/runtime.json
+```
+
+## What you can do
+
+| Create from an idea | Improve existing footage | Shape and finish |
+| --- | --- | --- |
+| Research and source notes | Inspect and transcribe | Storyboards and shot plans |
+| Audience-aware scripts | Recut and remove retakes | Original motion graphics |
+| Promos, explainers, tutorials | Captions and clean audio | Relevant stock and product footage |
+| Social and long-form videos | Dubs, recaps, and reframing | Music, sound design, and transitions |
+| Local or assisted workflows | Reproducible edit records | Playback and delivery review |
+
+Select each visual for its relationship to the narration; use motion and transitions to help the story. Check media rights and review the final export at its intended size.
+
+## Provider-neutral skills
+
+The skills follow the open [Agent Skills format](https://agentskills.io/specification): each skill has a `SKILL.md` and may include references or templates. They work directly in agent products that load this format; other LLMs can use them through their supported custom-instruction or tool workflow. The skills do not depend on one model provider. Tool availability, hosted services, and local rendering depend on the host environment.
 
 The workflow emphasizes evidence-backed scripts, motion planned around story beats, audience retention, source-grounded recaps and dubs, an early representative sample, and a coverage-based review of the export. Its engagement guidance adapts to the audience and format: the 2–3 second visual-change target is a short-form starting point, not a rule for every video. Tutorials, documentaries, interviews, explainers, personal stories, promotions, and other forms use pacing and storytelling suited to their purpose. It was informed by [awesome-claude-video-skills](https://github.com/zhuyansen/awesome-claude-video-skills), [lanshu-create-ai-presenter-video](https://github.com/cclank/lanshu-create-ai-presenter-video), [video-production-skills](https://github.com/Pluviobyte/video-production-skills), [video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft), [Violin](https://github.com/shang-zhu/violin), [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills), [Recordly](https://github.com/webadderallorg/Recordly), [chatgpt-video-editing-skills](https://github.com/Jaycheng1103/chatgpt-video-editing-skills), [chengfeng-videocut-skills](https://github.com/Agentchengfeng/chengfeng-videocut-skills), [jianying-editor-skill](https://github.com/luoluoluo22/jianying-editor-skill), [OpenMontage](https://github.com/calesthio/OpenMontage), [OpenCreator](https://github.com/krillinai/OpenCreator), [remotion-video-skill](https://github.com/wshuyi/remotion-video-skill), [video-editing-skill](https://github.com/maxazure/video-editing-skill), and [video-use](https://github.com/browser-use/video-use). This repository adopts transferable workflow ideas without requiring any listed provider, editor, or toolkit.
 
